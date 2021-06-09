@@ -32,6 +32,15 @@ const routes = [
     component: Tasks
   },
   {
+    path: "/groups-management",
+    name: "groups-management",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: loadView("groups-management")
+  },
+  {
     path: "/login",
     name: "login",
     replace: true,

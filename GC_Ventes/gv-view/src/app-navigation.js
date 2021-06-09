@@ -12,7 +12,7 @@ export default [
   },
   {
     text: "Page1",
-    path: "#",
+    path: "/groups-management",
     icon: "smalliconslayout"
     // items: [{}]
   },

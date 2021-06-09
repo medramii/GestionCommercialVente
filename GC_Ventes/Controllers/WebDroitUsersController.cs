@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GC_Ventes.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GC_Ventes.Controllers
 {
@@ -22,14 +23,9 @@ namespace GC_Ventes.Controllers
 
         // GET: api/WebDroitUsers/UserPages
         [HttpGet("UserPages/{id}")]
+        [Authorize]
         public async Task<IEnumerable<WebPage>> GetUserPages(int id)
         {
-            //IEnumerable<WebPage> pages = await _context.WebPages.ToListAsync();
-            
-            //var query = from ps in _context.WebPages
-            //            select ps;
-            //IEnumerable<WebPage> pages = query.ToList();
-
             string query = "select pg.* " +
                 "from MDI_Utilisateurs usr " +
                 "inner join MDI_GroupeUtilisateurs grp " +
@@ -41,9 +37,42 @@ namespace GC_Ventes.Controllers
                 "on  rgts.idPage = pg.id " +
                 "and rgts.droit = 1";
 
-            IEnumerable<WebPage> pages =  _context.WebPages.FromSqlRaw(query).ToList();
+
+            //var pages = _context.MdiUtilisateurs
+            //        .Include(x => x.IdGroupeNavigation)
+            //        .ThenInclude(z => z.WebDroitUsers)
+            //        .ThenInclude(y => y.IdPageNavigation)
+            //        .FirstOrDefault(x => x.Id == id).IdGroupeNavigation.WebDroitUsers
+            //        .Select(x => x.IdPageNavigation);
+
+            var pages = _context.WebPages.FromSqlRaw(query).ToList();
 
             return pages;
+        }
+
+        // GET: api/WebDroitUsers/GroupAccessRights/Designation
+        [Authorize]
+        [HttpGet("GroupAccessRights/{groupName}")]
+        public async Task<ActionResult> GetGroupAccessRights(String groupName)
+        {
+            try
+            {
+                //var rights = _context.MdiGroupeUtilisateurs
+                //    .Include(x => x.WebDroitUsers)
+                //    .ThenInclude(y => y.IdPageNavigation)
+                //    .Where(z => z.Designation == groupName);
+
+                var rights = _context.WebDroitUsers
+                    .Include(x => x.IdGoupNavigation)
+                    .Include(y => y.IdPageNavigation)
+                    .Where(x => x.IdGoupNavigation.Designation == groupName);
+
+                return Ok(rights);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/WebDroitUsers
