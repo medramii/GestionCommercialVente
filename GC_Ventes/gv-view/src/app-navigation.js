@@ -11,7 +11,7 @@ export default [
     // items: [{}]
   },
   {
-    text: "Page1",
+    text: "Groups management",
     path: "/groups-management",
     icon: "smalliconslayout"
     // items: [{}]

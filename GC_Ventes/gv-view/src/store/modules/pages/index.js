@@ -7,11 +7,11 @@ const pages = {
     namespaced: true,
     state () {
         return {
-            accessiblePages: []
+            accessiblePages: [],
         }
     },
     getters: {
-        getPages: (state) => state.accessiblePages
+        getPages: (state) => state.accessiblePages,
     },
     mutations: {
         setPages: (state, payLoad) => state.accessiblePages = payLoad,
@@ -35,11 +35,18 @@ const pages = {
                         });
                     });
 
+                    localStorage.setItem("Pages", JSON.stringify(accessiblePages));
                     commit("setPages", accessiblePages);
 
                     resolve(response.data);
                 })
-                .catch((error) => reject(error));
+                .catch((error) => {
+                    localStorage.removeItem('User');
+                    localStorage.removeItem('UserToken');
+                    commit("login/setSignedUser", null);
+                    reject(error);
+                });
+                
             })
         }
     }

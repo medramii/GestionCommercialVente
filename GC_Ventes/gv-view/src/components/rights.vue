@@ -6,9 +6,10 @@
           <div class="dx-field-value">
             <DxSelectBox
               :search-enabled="true"
-              :value="getGroups()[0]"
               :data-source="getGroups()"
-              @value-changed="onValueChanged" 
+              display-expr="name"
+              value-expr="id"
+              @value-changed="onSelectGroup"
             />
           </div>
         </div>
@@ -16,20 +17,25 @@
     <DxDataGrid
       :show-borders="true"
       :data-source="getRights()"
+      :remote-operations="true"
+      :repaint-changes-only="true"
+      @saving="onSaving"
     >
       <DxEditing
           :allow-updating="true"
-          mode="cell"
+          mode="batch"
       />
       <DxColumn
         :width="50"
-        data-field="Id"
+        data-field="idPage"
+        caption="Id"
       />
       <DxColumn
         data-field="Page"
       />
       <DxColumn
-        data-field="Has access ??"
+        data-field="hasAccess"
+        caption="Has access ??"
       />
     </DxDataGrid>
   </div>
@@ -62,11 +68,30 @@ export default {
     setGroups: function() {
       this.$store.dispatch('groupsAccessRights/GetGroups');
     },
-    setRights: function(group) {
-      this.$store.dispatch('groupsAccessRights/GetGroupAccessRights', group)
+    setRights: function(idGroup) {
+      this.$store.dispatch('groupsAccessRights/GetGroupAccessRights', idGroup)
     },
-    onValueChanged: function(e) {
+    updateRights: function(payload) {
+      this.$store.dispatch('groupsAccessRights/UpdateGroupAccessRights', payload)
+    },
+    onSelectGroup: function(e) {
       this.setRights(e.value);
+    },
+    onSaving: function(e) {
+      console.log("Saving....");
+      e.changes.forEach(element => {
+        let updated = {
+          "id": element.key.id,
+          "idGoup": element.key.idGoup,
+          "idPage": element.key.idPage,
+          "droit": element.data.hasAccess
+        };
+        let payload = {
+          "id": updated.id,
+          "data": updated
+        }
+        this.updateRights(payload);
+      });
     }
   },
   mounted() {

@@ -52,8 +52,8 @@ namespace GC_Ventes.Controllers
 
         // GET: api/WebDroitUsers/GroupAccessRights/Designation
         [Authorize]
-        [HttpGet("GroupAccessRights/{groupName}")]
-        public async Task<ActionResult> GetGroupAccessRights(String groupName)
+        [HttpGet("GroupAccessRights/{id}")]
+        public async Task<ActionResult> GetGroupAccessRights(int id)
         {
             try
             {
@@ -63,9 +63,8 @@ namespace GC_Ventes.Controllers
                 //    .Where(z => z.Designation == groupName);
 
                 var rights = _context.WebDroitUsers
-                    .Include(x => x.IdGoupNavigation)
                     .Include(y => y.IdPageNavigation)
-                    .Where(x => x.IdGoupNavigation.Designation == groupName);
+                    .Where(x => x.IdGoup == id);
 
                 return Ok(rights);
             }

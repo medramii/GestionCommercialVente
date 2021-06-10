@@ -1,6 +1,8 @@
 import Api from "../../api"
 
-const END_POINT = 'WebDroitUsers/GroupAccessRights/';
+const MAIN_END_POINT = 'WebDroitUsers/';
+const GROUPS_END_POINT = 'MdiGroupeUtilisateurs/';
+const RIGHTS_END_POINT = 'WebDroitUsers/GroupAccessRights/';
 
 const groupsAccessRights = {
     namespaced: true,
@@ -8,62 +10,66 @@ const groupsAccessRights = {
         return {
             groups: [],
             accessRights: [],
-            selectedGroup: []
         }
     },
     getters: {
         getGroups: (state) => state.groups,
         getAccessRights: (state) => state.accessRights,
-        getSelectedGroup: (state) => state.selectedGroup,
     },
     mutations: {
         setGroups: (state, payLoad) => state.groups = payLoad,
         setAccessRights: (state, payLoad) => state.accessRights = payLoad,
-        setSelectedGroup: (state, payLoad) => state.selectedGroup = payLoad,
     },
     actions: {
-        GetGroupAccessRights: ({commit}, payload) => {
-            let rights = [];
-            let grp = [];
+        GetGroups: ({commit}) => {
+            let tmpGroups = [];
             return new Promise((resolve, reject) => {
-                Api.get(END_POINT + payload)
+                Api.get(GROUPS_END_POINT)
                 .then((response) => {
                     response.data.forEach(e => {
-                        var right = {
-                            "Id": e.idPageNavigation.id,
-                            "Page": e.idPageNavigation.page,
-                            "Has access ??": e.droit,
-                        }
-                        rights.push(right);
-                        grp.push({
+                        tmpGroups.push({
                             "id": e.id,
-                            "idGoup": e.idGoup,
-                            "idGoupNavigation": e.idGoupNavigation,
-                            "idPageNavigation": e.idPageNavigation/****************** */
-                        })
+                            "name": e.designation
+                        });
                     });
-                    commit("setAccessRights", rights);
-                    commit("setSelectedGroup", grp);
+                    commit("setGroups", tmpGroups);
                     resolve(response);
                 })
                 .catch((error) => reject(error));
             })
         },
-        
-        GetGroups: ({commit}) => {
-            let grps = [];
+        GetGroupAccessRights: ({commit}, payload) => {
+            let rights = [];
             return new Promise((resolve, reject) => {
-                Api.get("MdiGroupeUtilisateurs")
+                Api.get(RIGHTS_END_POINT + payload)
                 .then((response) => {
                     response.data.forEach(e => {
-                        grps.push(e.designation);
+                        var right = {
+                            "id": e.id,
+                            "idGoup": e.idGoup,
+                            "idPage": e.idPageNavigation.id,
+                            "Page": e.idPageNavigation.page,
+                            "hasAccess": e.droit,
+                        }
+                        rights.push(right);
                     });
-                    commit("setGroups", grps);
+                    commit("setAccessRights", rights);
                     resolve(response);
                 })
                 .catch((error) => reject(error));
             })
-        }
+        },
+        UpdateGroupAccessRights: ({commit}, payload) => {
+            //console.log(!!commit);
+            return new Promise((resolve, reject) => {
+                Api.put(MAIN_END_POINT + payload.id, payload.data)
+                .then(() => {
+                    resolve(commit);
+                })
+                .catch((error) => reject(error));
+            })
+        },
+        
     }
 };
 export default groupsAccessRights

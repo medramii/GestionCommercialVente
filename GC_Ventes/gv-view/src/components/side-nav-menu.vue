@@ -113,7 +113,6 @@ export default {
   mounted() {
     // this.updateSelection();
     this.getAccessiblePages();
-
     const isLargeScreen = sizes()['screen-large'];
     if(this.getPages) {
       this.menuItems = this.getPages.map((item) => {
