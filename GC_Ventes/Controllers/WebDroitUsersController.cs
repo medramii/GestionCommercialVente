@@ -14,9 +14,9 @@ namespace GC_Ventes.Controllers
     [ApiController]
     public class WebDroitUsersController : ControllerBase
     {
-        private readonly VentesContext _context;
+        private readonly WEB_GC_Context _context;
 
-        public WebDroitUsersController(VentesContext context)
+        public WebDroitUsersController(WEB_GC_Context context)
         {
             _context = context;
         }

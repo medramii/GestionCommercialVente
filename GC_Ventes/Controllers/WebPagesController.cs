@@ -13,9 +13,9 @@ namespace GC_Ventes.Controllers
     [ApiController]
     public class WebPagesController : ControllerBase
     {
-        private readonly VentesContext _context;
+        private readonly WEB_GC_Context _context;
 
-        public WebPagesController(VentesContext context)
+        public WebPagesController(WEB_GC_Context context)
         {
             _context = context;
         }

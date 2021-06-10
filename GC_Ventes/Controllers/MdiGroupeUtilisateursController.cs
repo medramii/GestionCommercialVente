@@ -15,9 +15,9 @@ namespace GC_Ventes.Controllers
     [Authorize]
     public class MdiGroupeUtilisateursController : ControllerBase
     {
-        private readonly VentesContext _context;
+        private readonly WEB_GC_Context _context;
 
-        public MdiGroupeUtilisateursController(VentesContext context)
+        public MdiGroupeUtilisateursController(WEB_GC_Context context)
         {
             _context = context;
         }

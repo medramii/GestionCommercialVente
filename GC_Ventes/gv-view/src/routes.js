@@ -37,6 +37,15 @@ export default [
     component: loadView("groups-management")
   },
   {
+    name: "bon-de-livraison",
+    path: "/bon-de-livraison",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: loadView("bon-de-livraison")
+  },
+  {
     name: "login",
     path: "/login",
     replace: true,

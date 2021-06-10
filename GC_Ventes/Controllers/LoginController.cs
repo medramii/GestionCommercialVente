@@ -1,6 +1,5 @@
 ﻿using GC_Ventes.Models;
 using GC_Ventes.Models.VueModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -16,10 +15,10 @@ namespace GC_Ventes.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly VentesContext _context;
+        private readonly WEB_GC_Context _context;
         private IConfiguration _config;
 
-        public LoginController(VentesContext context, IConfiguration config)
+        public LoginController(WEB_GC_Context context, IConfiguration config)
         {
             _context = context;
             _config = config;

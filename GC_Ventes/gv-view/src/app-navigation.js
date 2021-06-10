@@ -8,25 +8,26 @@ export default [
     text: "Tasks",
     path: "/tasks",
     icon: "smalliconslayout"
-    // items: [{}]
   },
   {
     text: "Groups management",
     path: "/groups-management",
-    icon: "smalliconslayout"
-    // items: [{}]
+    icon: "group"
+  },
+  {
+    text: "Bon de livraison",
+    path: "/bon-de-livraison",
+    icon: "verticalaligntop"
   },
   {
     text: "Page2",
     path: "/",
-    icon: "smalliconslayout"
-    // items: [{}]
+    icon: "box"
   },
   {
     text: "Page3",
     path: "",
     icon: "smalliconslayout"
-    // items: [{}]
   },
   {
     text: "Page4",

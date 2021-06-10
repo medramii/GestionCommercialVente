@@ -14,9 +14,9 @@ namespace GC_Ventes.Controllers
     [ApiController]
     public class MdiUtilisateursController : ControllerBase
     {
-        private readonly VentesContext _context;
+        private readonly WEB_GC_Context _context;
 
-        public MdiUtilisateursController(VentesContext context)
+        public MdiUtilisateursController(WEB_GC_Context context)
         {
             _context = context;
         }

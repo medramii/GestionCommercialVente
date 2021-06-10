@@ -11,8 +11,8 @@ const router = new createRouter({
 router.beforeEach((to, from, next) => {
   const logged = !!store.state.login.signedUser; // check if the user is logged in or not
   const pages = JSON.parse(localStorage.getItem("Pages")) || [];
-  const names = pages.map(item => item.text.replace(" ", "-").toLowerCase());
-  console.log(names);
+  const names = pages.map(item => item.text.toLowerCase().replace(/\s/g, "-"));
+
   if (to.name === "default") next();
   if (to.name === "login" && logged) next({ name: "home" }); // if user is logged . redirect to home
 
