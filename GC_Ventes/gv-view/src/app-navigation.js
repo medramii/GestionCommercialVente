@@ -7,7 +7,7 @@ export default [
   {
     text: "Tasks",
     path: "/tasks",
-    icon: "smalliconslayout"
+    icon: "bulletlist"
   },
   {
     text: "Groups management",
@@ -20,19 +20,14 @@ export default [
     icon: "verticalaligntop"
   },
   {
-    text: "Page2",
-    path: "/",
-    icon: "box"
-  },
-  {
     text: "Page3",
     path: "",
-    icon: "smalliconslayout"
+    icon: "product"
   },
   {
     text: "Page4",
     path: "#/",
-    icon: "smalliconslayout"
+    icon: "box"
     // items: [{}]
   }
 ];

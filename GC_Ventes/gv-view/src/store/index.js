@@ -3,6 +3,7 @@ import testModule from "./modules/testModule"///////////
 import login from "./modules/login"
 import pages from "./modules/pages"
 import groupsAccessRights from "./modules/groups-access-rights"
+import bonLivraison from "./modules/bon-livraison"
 
 export const store = createStore({
   modules: {
@@ -10,5 +11,6 @@ export const store = createStore({
     login,
     pages,
     groupsAccessRights,
+    bonLivraison
   }
 })

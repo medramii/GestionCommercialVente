@@ -1,91 +1,91 @@
 <template>
   <div>
     <h2 class="content-block">Bon de livraison</h2>
-
-    <dx-data-grid
-      style="margin-inline: 40px;"
-      class="dx-card"
-      :data-source="dataSourceConfig"
-      :focused-row-index="0"
+    <DxDataGrid
+      class="content-block"
+      id="grid-container"
       :show-borders="false"
-      :focused-row-enabled="true"
-      :column-auto-width="true"
-      :column-hiding-enabled="true"
+      :data-source="dataSource"
+      key-expr="numBL"
     >
-      <dx-paging :page-size="10" />
-      <dx-pager :show-page-size-selector="true" :show-info="true" />
-      <dx-filter-row :visible="true" />
-
-      <dx-column
-        data-field="Task_Subject"
-        caption="Group"
-        :hiding-priority="0"
+      <DxColumn
+        :width="100"
+        data-field="numBL"
+        caption="Numero"
       />
-
-      <dx-column
-        data-field="Task_Status"
-        caption="Page"
-        :hiding-priority="0"
+      <DxColumn
+        data-field="codeClient"
+        caption="Client"
       />
-
-      <dx-column
-        data-field="Task_Completion"
-        caption="Has Acces ?"
-        :hiding-priority="0"
+      <DxColumn
+        data-field="destination"
+        caption="Destination"
       />
-
-    </dx-data-grid>
+      <DxColumn
+        data-field="dateBL"
+        data-type="date"
+        caption="Date"
+      />
+      <DxColumn
+        :width="170"
+        data-field="montantDH"
+        caption="Prix total (Dhs)"
+      />
+      <DxMasterDetail
+        :enabled="true"
+        template="masterDetailTemplate"
+      />
+      <template #masterDetailTemplate="{ data: bl }">
+        <DetailTemplate
+          :BlData="bl"
+        />
+      </template>
+    </DxDataGrid>
   </div>
 </template>
-
 <script>
-import "devextreme/data/odata/store";
-import DxDataGrid, {
+import {
+  DxDataGrid,
   DxColumn,
-  DxFilterRow,
-  DxPager,
-  DxPaging
-} from "devextreme-vue/data-grid";
+  DxMasterDetail,
+} from 'devextreme-vue/data-grid';
+import {mapGetters, mapActions} from "vuex"
 
-const priorities = [
-  { name: "High", value: 4 },
-  { name: "Urgent", value: 3 },
-  { name: "Normal", value: 2 },
-  { name: "Low", value: 1 }
-];
+import DetailTemplate from '../components/bon_livraison/master-template.vue';
 
 export default {
   data() {
     return {
-      groups: ["test1", "test2", "test3",]
-    }
+      dataSource: this.getBLs()
+    };
   },
-  setup() {
-    const dataSourceConfig = {
-      store: {
-        type: "odata",
-        key: "Task_ID",
-        url: "https://js.devexpress.com/Demos/DevAV/odata/Tasks"
+  computed: {
+
+  },
+  methods: {
+    ...mapGetters(
+      {
+        getBLs: "bonLivraison/getBLs",
       },
-      expand: "ResponsibleEmployee",
-      select: [
-        "Task_ID",
-        "Task_Subject",
-        "Task_Status",
-        "Task_Completion",
-      ]
-    };
-    return {
-      dataSourceConfig,
-      priorities
-    };
+    ),
+    ...mapActions({
+      initBLs: "bonLivraison/initBLs",
+    }),
   },
   components: {
     DxDataGrid,
     DxColumn,
-    DxFilterRow,
-    DxPager,
-    DxPaging
+    DxMasterDetail,
+    DetailTemplate
+  },
+  mounted() {
+    this.initBLs();
+    console.log(this.getBLs());
   }
 };
 </script>
+<style>
+#grid-container {
+    height: 440px;
+}
+</style>

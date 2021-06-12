@@ -84,7 +84,7 @@ export default {
       })
       .catch(() => {
         this.loading = false;
-        notify("Username or Password is uncorrect", "error", 2000);
+        notify("incorrect Username or Password", "error", 2000);
       })
     }
   },

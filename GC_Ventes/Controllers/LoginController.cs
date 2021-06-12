@@ -68,7 +68,7 @@ namespace GC_Ventes.Controllers
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Audience"],
                     claims,
-                    expires: DateTime.Now.AddMinutes(60),
+                    expires: DateTime.Now.AddMonths(1),
                     signingCredentials: credentials
                 );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
