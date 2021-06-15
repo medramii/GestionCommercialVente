@@ -46,6 +46,15 @@ export default [
     component: loadView("bon-de-livraison")
   },
   {
+    name: "add-bon-livraison",
+    path: "/bon-de-livraison/:action/:id",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: loadView("add-bon-livraison")
+  },
+  {
     name: "login",
     path: "/login",
     replace: true,

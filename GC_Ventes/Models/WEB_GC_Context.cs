@@ -54,6 +54,7 @@ namespace GC_Ventes.Models
         public virtual DbSet<_0109DetailFraisApproche> _0109DetailFraisApproches { get; set; }
         public virtual DbSet<_0110BonLivraison> _0110BonLivraisons { get; set; }
         public virtual DbSet<_0110LigneBonLivraison> _0110LigneBonLivraisons { get; set; }
+        public virtual DbSet<_0400Article> _0400Articles { get; set; }
         public virtual DbSet<_0400ClasseArticle> _0400ClasseArticles { get; set; }
         public virtual DbSet<_0400FamilleArticle> _0400FamilleArticles { get; set; }
         public virtual DbSet<_0400FamilleFournisseur> _0400FamilleFournisseurs { get; set; }
@@ -1978,6 +1979,11 @@ namespace GC_Ventes.Models
                     .WithMany(p => p._0110BonLivraisons)
                     .HasForeignKey(d => d.CodeClient)
                     .HasConstraintName("FK_0110_BonLivraison_Client");
+
+                entity.HasOne(d => d.IdDestinationNavigation)
+                    .WithMany(p => p._0110BonLivraisons)
+                    .HasForeignKey(d => d.IdDestination)
+                    .HasConstraintName("FK_0110_BonLivraison_0000_Ville");
             });
 
             modelBuilder.Entity<_0110LigneBonLivraison>(entity =>
@@ -2002,6 +2008,12 @@ namespace GC_Ventes.Models
 
                 entity.Property(e => e.Qte).HasColumnName("qte");
 
+                entity.HasOne(d => d.CodeArticleNavigation)
+                    .WithMany(p => p._0110LigneBonLivraisons)
+                    .HasPrincipalKey(p => p.CodeArticle)
+                    .HasForeignKey(d => d.CodeArticle)
+                    .HasConstraintName("FK_0110_LigneBonLivraison_0400_Article");
+
                 entity.HasOne(d => d.CodeMagasinNavigation)
                     .WithMany(p => p._0110LigneBonLivraisons)
                     .HasForeignKey(d => d.CodeMagasin)
@@ -2011,6 +2023,23 @@ namespace GC_Ventes.Models
                     .WithMany(p => p._0110LigneBonLivraisons)
                     .HasForeignKey(d => d.IdBonLivraison)
                     .HasConstraintName("FK_0110_LigneBonLivraison_0110_BonLivraison");
+            });
+
+            modelBuilder.Entity<_0400Article>(entity =>
+            {
+                entity.ToTable("0400_Article");
+
+                entity.HasIndex(e => e.CodeArticle, "IX_0400_Article")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CodeArticle)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("codeArticle");
+
+                entity.Property(e => e.Designation).HasMaxLength(50);
             });
 
             modelBuilder.Entity<_0400ClasseArticle>(entity =>

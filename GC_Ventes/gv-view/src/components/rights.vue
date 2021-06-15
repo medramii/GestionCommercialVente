@@ -1,19 +1,19 @@
 <template>
   <div>
-      <div class="dx-fieldset">
-        <div class="dx-field">
-          <div class="dx-field-label" style="font-size: 16px;">Group</div>
-          <div class="dx-field-value">
-            <DxSelectBox
-              :search-enabled="true"
-              :data-source="getGroups()"
-              display-expr="name"
-              value-expr="id"
-              @value-changed="onSelectGroup"
-            />
-          </div>
+    <div class="dx-fieldset">
+      <div class="dx-field">
+        <div class="dx-field-label" style="font-size: 16px;">Group</div>
+        <div class="dx-field-value">
+          <DxSelectBox
+            :search-enabled="true"
+            :data-source="getGroups()"
+            display-expr="name"
+            value-expr="id"
+            @value-changed="onSelectGroup"
+          />
         </div>
       </div>
+    </div>
     <DxDataGrid
       :show-borders="true"
       :data-source="getRights()"
@@ -26,11 +26,13 @@
           mode="batch"
       />
       <DxColumn
+        :editor-options="{disabled: true}"
         :width="50"
         data-field="idPage"
         caption="Id"
       />
       <DxColumn
+        :editor-options="{disabled: true}"
         data-field="Page"
       />
       <DxColumn

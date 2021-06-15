@@ -10,9 +10,8 @@
     </template>
     <template #item="{ data: tab }">
       <div class="tabpanel-item">
-        <Article v-if="tab.title === 'Articles'" :articles="BlData"></Article>
-        <Client v-else-if="tab.title === 'Client'" :client="BlData"></Client>
-        <Details v-else-if="tab.title === 'Details'" :details="BlData"></Details>
+        <Article v-if="tab.title === 'Articles'" :articles="tab.data.data._0110LigneBonLivraisons"></Article>
+        <Client v-else-if="tab.title === 'Client'" :client="tab.data.data.codeClientNavigation"></Client>
       </div>
     </template>
   </DxTabPanel>
@@ -23,7 +22,6 @@ import DxTabPanel from 'devextreme-vue/tab-panel';
 
 import Article from "./articles.vue"
 import Client from './client.vue';
-import Details from './details.vue';
 
 export default {
   props: {
@@ -35,8 +33,7 @@ export default {
   components: {
     DxTabPanel,
     Article,
-    Client,
-    Details
+    Client
   },
   data() {
     return {
@@ -49,10 +46,6 @@ export default {
           "title": "Client",
           "data": this.BlData
         },
-        {
-          "title": "Details",
-          "data": this.BlData
-        },
       ],
     };
   }
@@ -61,11 +54,11 @@ export default {
 
 <style>
 .tabpanel-item {
-    height: 200px;
+    /* height: 200px; */
     user-select: none;
-    margin: 25px;
-    padding-left: 25px;
-    padding-top: 25px;
+    margin: 0px;
+    padding-left: 0px;
+    padding-top: 20px;
 }
 
 .mobile .tabpanel-item {
@@ -74,7 +67,7 @@ export default {
 
 .tabpanel-item  > div {
     float: left;
-    padding: 0 85px 10px 10px
+    padding: 0
 }
 
 .tabpanel-item  p {

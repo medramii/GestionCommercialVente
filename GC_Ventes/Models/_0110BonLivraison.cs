@@ -24,6 +24,7 @@ namespace GC_Ventes.Models
         public double? MontantDh { get; set; }
 
         public virtual Client CodeClientNavigation { get; set; }
+        public virtual _0000Ville IdDestinationNavigation { get; set; }
         public virtual ICollection<_0110LigneBonLivraison> _0110LigneBonLivraisons { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace GC_Ventes.Models
         public double? Montant { get; set; }
         public string CodeMagasin { get; set; }
 
+        public virtual _0400Article CodeArticleNavigation { get; set; }
         public virtual _0400Magasin CodeMagasinNavigation { get; set; }
         public virtual _0110BonLivraison IdBonLivraisonNavigation { get; set; }
     }

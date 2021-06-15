@@ -14,12 +14,14 @@ router.beforeEach((to, from, next) => {
   const names = pages.map(item => item.text.toLowerCase().replace(/\s/g, "-"));
 
   if (to.name === "default") next();
+
   if (to.name === "login" && logged) next({ name: "home" }); // if user is logged . redirect to home
 
   if (to.matched.some(record => record.meta.requiresAuth)) // if a router requires authentication
   {
     if (!logged) next({name: "login"}); // redirect to login if is not logged in
     else if(names.includes(to.name)) next();
+    else if (names.includes("bon-de-livraison") && to.name === "add-bon-livraison") next();
     else next({ name: from.name }); // conitnue to route if logged in
   }
   else next(); // conitnue to route if a router doesn't require authentication
