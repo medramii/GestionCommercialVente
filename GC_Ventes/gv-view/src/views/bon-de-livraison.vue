@@ -48,6 +48,26 @@
         data-field="montantDh"
         caption="Prix total (Dhs)"
       />
+      <DxColumn
+        :width="500"
+        data-field="typeVente"
+        caption="Type de vente"
+      />
+      <DxColumn
+        :width="500"
+        data-field="idDevise"
+        caption="Devise"
+      />
+      <DxColumn
+        :width="500"
+        data-field="tauxDeChange"
+        caption="Taux de change"
+      />
+      <DxColumn
+        :width="500"
+        data-field="observation"
+        caption="Observation"
+      />
       <DxMasterDetail
         :enabled="true"
         template="masterDetailTemplate"
@@ -136,12 +156,9 @@ export default {
       this.selectedRowIndex = e.component.getRowIndexByKey(e.selectedRowKeys[0]);
     },
     addBL: function() {
-      console.log("Add Bl...");
-      // this.$router.push("/bon-de-livraison/add-bon-livraison");
       this.$router.push({name: 'add-bon-livraison', params: {action: "Ajouter", id: "new"}})
     },
     editBL: function() {
-      console.log("Edit Bl...");
       this.$router.push({name: 'add-bon-livraison', params: {action: "Modifier", id: this.selectedBlId}})
     },
     deleteBL: async function() {

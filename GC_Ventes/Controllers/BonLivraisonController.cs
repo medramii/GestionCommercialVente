@@ -26,11 +26,6 @@ namespace GC_Ventes.Controllers
         {
             try
             {
-                //string query = "SELECT numBL "
-                //    + "FROM 0110_BonLivraison ";
-                //+"WHERE id = (SELECT MAX(id) "
-                //+ "FROM 0110_BonLivraison)"
-
                 var lastBl = _context._0110BonLivraisons.OrderBy(x=>x.Id).Last();
                 int num = 1;
                 if (lastBl != null)
