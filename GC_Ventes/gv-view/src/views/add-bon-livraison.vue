@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h2 class="content-block" v-if="id>-1">{{id}}</h2>
     <h2 class="content-block">
       {{action}} bon de livraison
     </h2>
@@ -17,7 +16,7 @@
         />
         <DxItem
           :editor-options="{
-            value: '',
+            value: getBl.codeClient,
             searchEnabled: true,
             items: getClients,
             displayExpr: 'codeClient', // here will be the raisonSocial instead of codeClient
@@ -28,7 +27,7 @@
         />
         <DxItem
           :editor-options="{
-            value: '',
+            value: getBl.idDestination,
             searchEnabled: true,
             items: getVilles,
             displayExpr: 'ville',
@@ -63,12 +62,13 @@
       :column-auto-width="true"
       :column-hiding-enabled="true"
       :show-borders="false"
-      :data-source="articles"
+      :data-source="getLignesBl"
     >
       <DxEditing
         :allow-adding="true"
+        :allow-updating="true"
         :allow-deleting="true"
-        :refresh-mode="refreshMode"
+        refresh-mode="repaint"
         mode="batch"
       />
       <DxColumn
@@ -130,8 +130,6 @@ export default {
     return {
       action: this.$route.params.action,
       id: this.$route.params.id,
-      refreshMode: 'full',
-      articles: [],
     }
   },
   computed: {
@@ -139,6 +137,7 @@ export default {
       {
         getBl: "bonLivraison/getBlInUse",
         getNextBl: "bonLivraison/getNextBl",
+        getLignesBl: "bonLivraison/getLignesBl",
         getClients: "bonLivraison/getClients",
         getVilles: "bonLivraison/getVilles",
         getArticles: "bonLivraison/getArticles",
@@ -149,18 +148,33 @@ export default {
   methods: {
     ...mapActions(
       {
-        initData: "bonLivraison/initData",
+        initDataForAdd: "bonLivraison/initDataForAdd",
       }
     ),
+    initDataForUpdate(id) {
+      this.$store.dispatch('bonLivraison/initDataForUpdate', id)
+    },
     SaveBl() {
-      this.$store.dispatch('bonLivraison/addBL', this.articles)
+      if (this.action == "Ajouter") {
+        this.$store.dispatch('bonLivraison/addBL');
+      }
+      else if (this.action == "Modifier" && this.id > 0) {
+        this.$store.dispatch('bonLivraison/editBL', this.id);
+      }
     },
   },
   beforeMount() {
-    this.initData();
-
-    // console.log(this.action);
-    // console.log(this.getBl.numBl);
+    if (this.action == "Ajouter") {
+      console.log("Ajouter...");
+      this.initDataForAdd();
+    }
+    else if (this.action == "Modifier" && this.id > 0) {
+      console.log("Modifier...");
+      this.initDataForUpdate(this.id);
+    }
+    else {
+      console.log("Error 404 not found...!!");
+    }
   }
 };
 </script>

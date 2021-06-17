@@ -47,13 +47,38 @@ namespace GC_Ventes.Controllers
         {
             try
             {
+                //var BLs = _context._0110BonLivraisons
+                //.Include(x => x.CodeClientNavigation)
+                //.Include(y => y.IdDestinationNavigation)
+                //.Include(z => z._0110LigneBonLivraisons)
+                //.ThenInclude(j => j.CodeArticleNavigation)
+                //.Include(k => k._0110LigneBonLivraisons)
+                //.ThenInclude(l => l.CodeMagasinNavigation);
+
                 var BLs = _context._0110BonLivraisons
-                .Include(x => x.CodeClientNavigation)
-                .Include(y => y.IdDestinationNavigation)
-                .Include(z => z._0110LigneBonLivraisons)
-                .ThenInclude(j => j.CodeArticleNavigation)
-                .Include(k => k._0110LigneBonLivraisons)
-                .ThenInclude(l => l.CodeMagasinNavigation);
+                .Select(x => new { 
+                    x.Id,
+                    x.NumBl,
+                    Client = x.CodeClientNavigation,
+                    Destination = x.IdDestinationNavigation!=null? x.IdDestinationNavigation.Ville : "",
+                    x.DateBl,
+                    x.MontantDh,
+                    x.TypeVente,
+                    x.IdDevise,
+                    x.TauxDeChange,
+                    x.Observation,
+                    LignesBl = x._0110LigneBonLivraisons.Select(y => new
+                    {
+                        y.Id,
+                        y.CodeArticle,
+                        y.CodeMagasin,
+                        y.Qte,
+                        y.Prix,
+                        y.Montant,
+                        Article = y.CodeArticleNavigation,
+                        Magasin = y.CodeMagasinNavigation,
+                    }),
+                });
 
                 return Ok(BLs);
             }
@@ -67,14 +92,23 @@ namespace GC_Ventes.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<_0110BonLivraison>> Get_0110BonLivraison(int id)
         {
-            var _0110BonLivraison = await _context._0110BonLivraisons.FindAsync(id);
+            //var _0110BonLivraison = await _context._0110BonLivraisons.FindAsync(id);
+            
+            var Bl = _context._0110BonLivraisons
+                .Include(z => z._0110LigneBonLivraisons)
+                .ThenInclude(j => j.CodeArticleNavigation)
+                .Include(k => k._0110LigneBonLivraisons)
+                .ThenInclude(l => l.CodeMagasinNavigation)
+                .FirstOrDefault(x=>x.Id==id);
 
-            if (_0110BonLivraison == null)
+
+
+            if (Bl == null)
             {
                 return NotFound();
             }
 
-            return _0110BonLivraison;
+            return Bl;
         }
 
         // PUT: api/BonLivraison/5

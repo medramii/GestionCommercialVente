@@ -12,6 +12,7 @@ const bonLivraison = {
         return {
             BLs: [],
             BlInUse: [],
+            LignesBl: [],
             NextBl: "",
             Clients: [],
             Villes: [],
@@ -22,6 +23,7 @@ const bonLivraison = {
     getters: {
         getBLs: (state) => state.BLs,
         getBlInUse: (state) => state.BlInUse,
+        getLignesBl: (state) => state.LignesBl,
         getNextBl: (state) => state.NextBl,
         getClients: (state) => state.Clients,
         getVilles: (state) => state.Villes,
@@ -31,6 +33,7 @@ const bonLivraison = {
     mutations: {
         setBLs: (state, payLoad) => state.BLs = payLoad,
         setBlInUse: (state, payLoad) => state.BlInUse = payLoad,
+        setLignesBl: (state, payLoad) => state.LignesBl = payLoad,
         setNextBl: (state, payLoad) => state.NextBl = payLoad,
         setClients: (state, payLoad) => state.Clients = payLoad,
         setVilles: (state, payLoad) => state.Villes = payLoad,
@@ -66,7 +69,7 @@ const bonLivraison = {
             });
         },
         //for add and edit
-        initData: ({commit}) => {
+        initDataForAdd: ({commit}) => {
             return new Promise((resolve, reject) => {
                 // get next numBl
                 Api.get(MAIN_END_POINT + "NextBl")
@@ -116,7 +119,8 @@ const bonLivraison = {
             });
         },
 
-        addBL: ({getters}, payload) => {
+        addBL: ({getters}) => {
+            let payload = getters.getLignesBl;
             let montantDH = 0;
             payload.forEach(article => montantDH += article.qte * article.prix)
                 
@@ -155,7 +159,104 @@ const bonLivraison = {
                     reject(error);
                 });
             });
-        }
+        },
+
+        initDataForUpdate: ({commit}, payload) => {
+            console.log(payload);
+            return new Promise((resolve, reject) => {
+                // get next numBl
+                Api.get(MAIN_END_POINT + payload)
+                .then((response) => {
+                    commit("setBlInUse", response.data);
+                    commit("setLignesBl", response.data._0110LigneBonLivraisons);
+                    commit("setNextBl", response.data.numBl);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+                // get clients
+                Api.get(CLIENTS_END_POINT)
+                .then((response) => {
+                    commit("setClients", response.data);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+                // get villes
+                Api.get(VILLES_END_POINT)
+                .then((response) => {
+                    commit("setVilles", response.data);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+                // get articles
+                Api.get(ARTICLES_END_POINT)
+                .then((response) => {
+                    commit("setArticles", response.data);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+                // get magasins
+                Api.get(MAGSINS_END_POINT)
+                .then((response) => {
+                    commit("setMagasins", response.data);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
+
+        editBL: ({getters}, id) => {
+            console.log("Updating...");
+            let payload = getters.getLignesBl;
+            let montantDH = 0;
+            payload.forEach(article => montantDH += article.qte * article.prix);
+                
+            console.log(montantDH);
+
+            let bl = {
+                id,
+                "numBl": getters.getBlInUse.numBl || '',
+                "dateBl": getters.getBlInUse.dateBl || '',
+                "codeClient": getters.getBlInUse.codeClient || '',
+                "typeVente": getters.getBlInUse.typeVente || '',
+                "idDestination": getters.getBlInUse.Destination || '',
+                "idDevise": getters.getBlInUse.Devise || '',
+                "observation": getters.getBlInUse.observation || '',
+                "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
+                montantDH
+            };
+            
+            return new Promise((resolve, reject) => {
+                Api.put(MAIN_END_POINT + id, bl)
+                .then((response) => {
+                    payload.forEach(article => {
+                        article["idBonLivraison"] = id;
+                        article["montant"] = article.qte * article.prix;
+
+                        Api.post(LIGNESBL_END_POINT, article)
+                        .then((response) => {
+                            resolve(response);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                    }); 
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
     }
 };
 export default bonLivraison

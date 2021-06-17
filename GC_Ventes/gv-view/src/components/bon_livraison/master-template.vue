@@ -10,8 +10,8 @@
     </template>
     <template #item="{ data: tab }">
       <div class="tabpanel-item">
-        <Article v-if="tab.title === 'Articles'" :articles="tab.data.data._0110LigneBonLivraisons"></Article>
-        <Client v-else-if="tab.title === 'Client'" :client="tab.data.data.codeClientNavigation"></Client>
+        <Article v-if="tab.title === 'Articles'" :articles="tab.data.data.lignesBl"></Article>
+        <Client v-else-if="tab.title === 'Client'" :client="tab.data.data.client"></Client>
       </div>
     </template>
   </DxTabPanel>

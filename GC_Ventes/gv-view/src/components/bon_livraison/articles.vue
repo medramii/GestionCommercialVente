@@ -11,11 +11,11 @@
       caption="Numero"
     />
     <DxColumn
-      data-field="codeArticleNavigation.designation"
+      data-field="article.designation"
       caption="Article"
     />
     <DxColumn
-      data-field="codeMagasinNavigation.designation"
+      data-field="magasin.designation"
       caption="Magasin"
     />
     <DxColumn

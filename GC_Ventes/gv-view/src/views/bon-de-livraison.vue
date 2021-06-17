@@ -23,7 +23,7 @@
         :show-info="true" 
       />
       <DxEditing
-        :refresh-mode="refreshMode"
+        refresh-mode="repaint"
       />
       <DxColumn
         :width="100"
@@ -31,11 +31,11 @@
         caption="Numero"
       />
       <DxColumn
-        data-field="codeClient"
+        data-field="client.codeClient"
         caption="Client"
       />
       <DxColumn
-        data-field="idDestinationNavigation.ville"
+        data-field="destination"
         caption="Destination"
       />
       <DxColumn
@@ -120,9 +120,9 @@ export default {
   data() {
     return {
       gridRefName: 'grid',
-      refreshMode: 'full',
       dataSource: new CustomStore({
         key: 'id',
+        // load: this.initBLs(),
         load: async () => {
           await this.initBLs();
           return this.getBLs();
