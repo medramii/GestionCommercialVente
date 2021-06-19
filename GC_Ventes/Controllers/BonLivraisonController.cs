@@ -121,7 +121,38 @@ namespace GC_Ventes.Controllers
                 return BadRequest();
             }
 
+            //-----------------------------------------  Modifier Ligne BL -------------------------------------
+            var oldLignes = _context._0110LigneBonLivraisons.Where(x => x.IdBonLivraison == _0110BonLivraison.Id);
+
+            foreach (var item in oldLignes)
+            {
+                if (!_0110BonLivraison._0110LigneBonLivraisons.Any(x => x.Id == item.Id))
+                {
+                    _context.Remove(item);
+                }
+                else
+                {
+                    var newValue = _0110BonLivraison._0110LigneBonLivraisons.FirstOrDefault(x => x.Id == item.Id);
+                    item.CodeArticle = newValue.CodeArticle;
+                    item.Qte = newValue.Qte;
+                    item.Prix = newValue.Prix;
+                    item.Montant = newValue.Montant;
+                    item.CodeMagasin = newValue.CodeMagasin;
+                }
+
+            }
+            
+            
+            await _context.AddRangeAsync(
+                _0110BonLivraison._0110LigneBonLivraisons
+                    .Where(x => !oldLignes
+                        .Select(r => r.Id)
+                        .Contains(x.Id)));
+
+
             _context.Entry(_0110BonLivraison).State = EntityState.Modified;
+
+/**************************************************************************************************/
 
             try
             {

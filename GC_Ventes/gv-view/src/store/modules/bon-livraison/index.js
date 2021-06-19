@@ -1,10 +1,5 @@
 import Api from "../../api"
 const MAIN_END_POINT = 'BonLivraison/';
-const LIGNESBL_END_POINT = 'LignesBonLivraison/';
-const CLIENTS_END_POINT = 'Clients/';
-const VILLES_END_POINT = 'Villes/';
-const ARTICLES_END_POINT = 'Articles/';
-const MAGSINS_END_POINT = 'Magasins/';
 
 const bonLivraison = {
     namespaced: true,
@@ -14,10 +9,6 @@ const bonLivraison = {
             BlInUse: [],
             LignesBl: [],
             NextBl: "",
-            Clients: [],
-            Villes: [],
-            Articles: [],
-            Magasins: [],
         }
     },
     getters: {
@@ -25,20 +16,12 @@ const bonLivraison = {
         getBlInUse: (state) => state.BlInUse,
         getLignesBl: (state) => state.LignesBl,
         getNextBl: (state) => state.NextBl,
-        getClients: (state) => state.Clients,
-        getVilles: (state) => state.Villes,
-        getArticles: (state) => state.Articles,
-        getMagasins: (state) => state.Magasins,
     },
     mutations: {
         setBLs: (state, payLoad) => state.BLs = payLoad,
         setBlInUse: (state, payLoad) => state.BlInUse = payLoad,
         setLignesBl: (state, payLoad) => state.LignesBl = payLoad,
         setNextBl: (state, payLoad) => state.NextBl = payLoad,
-        setClients: (state, payLoad) => state.Clients = payLoad,
-        setVilles: (state, payLoad) => state.Villes = payLoad,
-        setArticles: (state, payLoad) => state.Articles = payLoad,
-        setMagasins: (state, payLoad) => state.Magasins = payLoad,
     },
     actions: {
         initBLs: ({commit}) => {
@@ -68,7 +51,7 @@ const bonLivraison = {
                 });
             });
         },
-        //for add and edit
+        //for add
         initDataForAdd: ({commit}) => {
             return new Promise((resolve, reject) => {
                 // get next numBl
@@ -80,51 +63,17 @@ const bonLivraison = {
                 .catch((error) => {
                     reject(error);
                 });
-                // get clients
-                Api.get(CLIENTS_END_POINT)
-                .then((response) => {
-                    commit("setClients", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get villes
-                Api.get(VILLES_END_POINT)
-                .then((response) => {
-                    commit("setVilles", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get articles
-                Api.get(ARTICLES_END_POINT)
-                .then((response) => {
-                    commit("setArticles", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get magasins
-                Api.get(MAGSINS_END_POINT)
-                .then((response) => {
-                    commit("setMagasins", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
             });
         },
 
         addBL: ({getters}) => {
-            let payload = getters.getLignesBl;
+            let lignesBl = getters.getLignesBl;
             let montantDH = 0;
-            payload.forEach(article => montantDH += article.qte * article.prix)
-                
-            console.log(montantDH);
+            
+            lignesBl.forEach(article => {
+                article["montant"] = article.qte * article.prix;
+                montantDH += article.qte * article.prix;
+            });
 
             let bl = {
                 "numBl": getters.getBlInUse.numBl || '',
@@ -135,24 +84,13 @@ const bonLivraison = {
                 "idDevise": getters.getBlInUse.Devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
-                montantDH
+                montantDH,
+                "_0110LigneBonLivraisons": lignesBl
             };
-            
+
             return new Promise((resolve, reject) => {
                 Api.post(MAIN_END_POINT, bl)
                 .then((response) => {
-                    payload.forEach(article => {
-                        article["idBonLivraison"] = response.data.id;
-                        article["montant"] = article.qte * article.prix;
-
-                        Api.post(LIGNESBL_END_POINT, article)
-                        .then((response) => {
-                            resolve(response);
-                        })
-                        .catch((error) => {
-                            reject(error);
-                        });
-                    }); 
                     resolve(response);
                 })
                 .catch((error) => {
@@ -160,7 +98,7 @@ const bonLivraison = {
                 });
             });
         },
-
+        //for edit
         initDataForUpdate: ({commit}, payload) => {
             console.log(payload);
             return new Promise((resolve, reject) => {
@@ -175,52 +113,17 @@ const bonLivraison = {
                 .catch((error) => {
                     reject(error);
                 });
-                // get clients
-                Api.get(CLIENTS_END_POINT)
-                .then((response) => {
-                    commit("setClients", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get villes
-                Api.get(VILLES_END_POINT)
-                .then((response) => {
-                    commit("setVilles", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get articles
-                Api.get(ARTICLES_END_POINT)
-                .then((response) => {
-                    commit("setArticles", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-                // get magasins
-                Api.get(MAGSINS_END_POINT)
-                .then((response) => {
-                    commit("setMagasins", response.data);
-                    resolve(response.data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
             });
         },
 
         editBL: ({getters}, id) => {
-            console.log("Updating...");
-            let payload = getters.getLignesBl;
+            let lignesBl = getters.getLignesBl;
             let montantDH = 0;
-            payload.forEach(article => montantDH += article.qte * article.prix);
-                
-            console.log(montantDH);
+            
+            lignesBl.forEach(article => {
+                article["montant"] = article.qte * article.prix;
+                montantDH += article.qte * article.prix;
+            });
 
             let bl = {
                 id,
@@ -232,24 +135,12 @@ const bonLivraison = {
                 "idDevise": getters.getBlInUse.Devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
-                montantDH
+                montantDH,
+                "_0110LigneBonLivraisons": lignesBl
             };
-            
             return new Promise((resolve, reject) => {
                 Api.put(MAIN_END_POINT + id, bl)
-                .then((response) => {
-                    payload.forEach(article => {
-                        article["idBonLivraison"] = id;
-                        article["montant"] = article.qte * article.prix;
-
-                        Api.post(LIGNESBL_END_POINT, article)
-                        .then((response) => {
-                            resolve(response);
-                        })
-                        .catch((error) => {
-                            reject(error);
-                        });
-                    }); 
+                .then((response) => { 
                     resolve(response);
                 })
                 .catch((error) => {
