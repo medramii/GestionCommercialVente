@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="content-block">Bon de livraison</h2>
+    <h2 class="content-block">Facturation</h2>
     <DxDataGrid
       class="content-block"
       :focused-row-enabled="true"

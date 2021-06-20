@@ -4,17 +4,17 @@
       <dx-item
         data-field="username"
         editor-type="dxTextBox"
-        :editor-options="{ stylingMode: 'filled', placeholder: 'Username', mode: 'text' }"
+        :editor-options="{ stylingMode: 'filled', placeholder: 'Pseudo', mode: 'text' }"
       >
-        <dx-required-rule message="Username is required" />
+        <dx-required-rule message="Pseudo requis!" />
         <dx-label :visible="false" />
       </dx-item>
       <dx-item
         data-field='password'
         editor-type='dxTextBox'
-        :editor-options="{ stylingMode: 'filled', placeholder: 'Password', mode: 'password' }"
+        :editor-options="{ stylingMode: 'filled', placeholder: 'Mot de passe', mode: 'password' }"
       >
-        <dx-required-rule message="Password is required" />
+        <dx-required-rule message="Mot de passe requis!" />
         <dx-label :visible="false" />
       </dx-item>
       <dx-item
@@ -37,7 +37,7 @@
         <div>
           <span class="dx-button-text">
             <dx-load-indicator v-if="loading" width="24px" height="24px" :visible="true" />
-            <span v-if="!loading">Sign In</span>
+            <span v-if="!loading">Se connecter</span>
           </span>
         </div>
       </template>
@@ -84,7 +84,7 @@ export default {
       })
       .catch(() => {
         this.loading = false;
-        notify("incorrect Username or Password", "error", 2000);
+        notify("Nom d'utilisateur ou mot de passe incorrect", "error", 2000);
       })
     }
   },

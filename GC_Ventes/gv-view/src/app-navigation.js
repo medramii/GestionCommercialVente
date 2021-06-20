@@ -20,9 +20,9 @@ export default [
     icon: "verticalaligntop"
   },
   {
-    text: "Page3",
-    path: "",
-    icon: "product"
+    text: "Facturation",
+    path: "/facturation",
+    icon: "money"
   },
   {
     text: "Page4",

@@ -5,9 +5,9 @@
     :animation-enabled="true"
     :swipe-enabled="true"
   >
-    <template #title="{ data: tab }">
+    <!-- <template #title="{ data: tab }">
       <span> {{tab.title}} </span>
-    </template>
+    </template> -->
     <template #item="{ data: tab }">
       <div class="tabpanel-item">
         <Article v-if="tab.title === 'Articles'" :articles="tab.data.data.lignesBl"></Article>

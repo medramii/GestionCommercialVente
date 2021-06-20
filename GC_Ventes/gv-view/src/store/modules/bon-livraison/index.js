@@ -81,7 +81,7 @@ const bonLivraison = {
                 "codeClient": getters.getBlInUse.codeClient || '',
                 "typeVente": getters.getBlInUse.typeVente || '',
                 "idDestination": getters.getBlInUse.Destination || '',
-                "idDevise": getters.getBlInUse.Devise || '',
+                "devise": getters.getBlInUse.devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
                 montantDH,
@@ -100,7 +100,6 @@ const bonLivraison = {
         },
         //for edit
         initDataForUpdate: ({commit}, payload) => {
-            console.log(payload);
             return new Promise((resolve, reject) => {
                 // get next numBl
                 Api.get(MAIN_END_POINT + payload)
@@ -124,7 +123,6 @@ const bonLivraison = {
                 article["montant"] = article.qte * article.prix;
                 montantDH += article.qte * article.prix;
             });
-
             let bl = {
                 id,
                 "numBl": getters.getBlInUse.numBl || '',
@@ -132,7 +130,7 @@ const bonLivraison = {
                 "codeClient": getters.getBlInUse.codeClient || '',
                 "typeVente": getters.getBlInUse.typeVente || '',
                 "idDestination": getters.getBlInUse.Destination || '',
-                "idDevise": getters.getBlInUse.Devise || '',
+                "devise": getters.getBlInUse.devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
                 montantDH,

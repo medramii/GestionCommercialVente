@@ -42,9 +42,6 @@ export default {
       item.template = 'form-item';
     }
   },
-  mounted() {
-    console.log(this.client)
-  }
 };
 </script>
 <style>

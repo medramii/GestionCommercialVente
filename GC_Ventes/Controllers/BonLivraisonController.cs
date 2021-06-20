@@ -26,10 +26,12 @@ namespace GC_Ventes.Controllers
         {
             try
             {
-                var lastBl = _context._0110BonLivraisons.OrderBy(x=>x.Id).Last();
                 int num = 1;
-                if (lastBl != null)
+                var count = _context._0110BonLivraisons.Count();
+                
+                if (count > 0)
                 {
+                    var lastBl = _context._0110BonLivraisons.OrderBy(x => x.Id).Last();
                     num = int.Parse(lastBl.NumBl.Substring(3)) + 1;
                 }
 
@@ -64,7 +66,7 @@ namespace GC_Ventes.Controllers
                     x.DateBl,
                     x.MontantDh,
                     x.TypeVente,
-                    x.IdDevise,
+                    x.Devise,
                     x.TauxDeChange,
                     x.Observation,
                     LignesBl = x._0110LigneBonLivraisons.Select(y => new

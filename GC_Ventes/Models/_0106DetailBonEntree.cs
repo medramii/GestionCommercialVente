@@ -29,6 +29,7 @@ namespace GC_Ventes.Models
         public string CodeLot { get; set; }
         public bool? TypeLot { get; set; }
 
+        public virtual _0400Article CodeArticleNavigation { get; set; }
         public virtual _0000Service CodeServiceNavigation { get; set; }
         public virtual _0106BonEntree IdBonEntreeNavigation { get; set; }
         public virtual _0102TypeMarchandise IdTypeMarchandiseNavigation { get; set; }

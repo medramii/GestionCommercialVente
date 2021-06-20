@@ -17,7 +17,7 @@
                   margin-right: 5px;
                 "
               />
-              <h2 style="display: contents;">{{ action }} bon de livraison</h2>
+              <h2 style="display: contents">{{ action }} bon de livraison</h2>
             </div>
           </template>
         </DxItem>
@@ -27,13 +27,14 @@
         />
         <DxItem
           :editor-options="{ value: getNextBl, disabled: true }"
-          data-field="numBl"/>
+          data-field="numBl"
+        />
         <DxItem
           :editor-options="{
             value: getBl.codeClient,
             searchEnabled: true,
             items: getClients,
-            displayExpr: 'codeClient', // here will be the raisonSocial instead of codeClient
+            displayExpr: 'raisonSociale', // here will be the raisonSocial instead of codeClient
             valueExpr: 'codeClient',
           }"
           data-field="codeClient"
@@ -66,18 +67,18 @@
         </DxItem>
         <DxItem
           :editor-options="{
-            value: '1',
-            items: ['1', '2', '3'],
+            value: 'MAD',
+            items: ['MAD', 'USD', 'EUR'],
           }"
           editor-type="dxSelectBox"
-          data-field="Devise"
+          data-field="devise"
         >
           <DxRequiredRule message="Devise est obligatoire" />
         </DxItem>
         <DxItem
           data-field="tauxDeChange"
           editor-type="dxNumberBox"
-          :editor-options="{value: 1,min: '1'}"
+          :editor-options="{ value: 1, min: '1' }"
         >
           <DxRequiredRule message="Taux de change est obligatoire" />
         </DxItem>
@@ -136,7 +137,7 @@
         data-field="qte"
         caption="Quantité"
         editor-type="dxNumberBox"
-        :editor-options="{min: '1'}"
+        :editor-options="{ min: '1' }"
       >
         <DxRequiredRule message="La quantité est obligatoire" />
       </DxColumn>
@@ -144,7 +145,7 @@
         data-field="prix"
         caption="Prix unitaire (Dhs)"
         editor-type="dxNumberBox"
-        :editor-options="{min: '0'}"
+        :editor-options="{ min: '0' }"
       >
         <DxRequiredRule message="Le prix est obligatoire" />
       </DxColumn>
@@ -201,12 +202,13 @@ export default {
   methods: {
     ...mapActions({
       initDataForAdd: "bonLivraison/initDataForAdd",
+      initDataForUpdate: "bonLivraison/initDataForUpdate",
       addBl: "bonLivraison/addBL",
       configData: "config/initConfig",
     }),
-    initDataForUpdate(id) {
-      this.$store.dispatch("bonLivraison/initDataForUpdate", id);
-    },
+    // initDataForUpdate(id) {
+    //   this.$store.dispatch("bonLivraison/initDataForUpdate", id);
+    // },
     dataValidation() {
       if (this.getLignesBl.length < 1) {
         return "La livraison doit contenir au moins un article...!!?";
@@ -243,17 +245,17 @@ export default {
     },
   },
   beforeMount() {
-    if (this.action == "Ajouter" && this.id == "new") {
-      console.log("Ajouter...");
+    if (this.action == "Ajouter" && this.id == "nouveau") {
       this.configData();
       this.initDataForAdd();
     } else if (this.action == "Modifier" && this.id > 0) {
-      console.log("Modifier...");
       this.configData();
-      this.initDataForUpdate(this.id);
+      this.initDataForUpdate(this.id)
+        .catch(() => {
+          this.$router.back();
+        });
     } else {
-      console.log("Error 404 not found...!!");
-      this.$router.go(-1);
+      this.$router.back();
     }
   },
   beforeUnmount() {

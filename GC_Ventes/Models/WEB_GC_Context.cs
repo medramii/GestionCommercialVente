@@ -1572,6 +1572,13 @@ namespace GC_Ventes.Models
 
                 entity.Property(e => e.TypeLot).HasColumnName("typeLot");
 
+                entity.HasOne(d => d.CodeArticleNavigation)
+                    .WithMany(p => p._0106DetailBonEntrees)
+                    .HasPrincipalKey(p => p.CodeArticle)
+                    .HasForeignKey(d => d.CodeArticle)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_0106_DetailBonEntree_0400_Article");
+
                 entity.HasOne(d => d.CodeServiceNavigation)
                     .WithMany(p => p._0106DetailBonEntrees)
                     .HasForeignKey(d => d.CodeService)
@@ -1955,9 +1962,9 @@ namespace GC_Ventes.Models
                     .HasColumnType("date")
                     .HasColumnName("dateBL");
 
-                entity.Property(e => e.IdDestination).HasColumnName("idDestination");
+                entity.Property(e => e.Devise).HasMaxLength(50);
 
-                entity.Property(e => e.IdDevise).HasColumnName("idDevise");
+                entity.Property(e => e.IdDestination).HasColumnName("idDestination");
 
                 entity.Property(e => e.MontantDh).HasColumnName("montantDH");
 
@@ -1983,7 +1990,7 @@ namespace GC_Ventes.Models
                 entity.HasOne(d => d.IdDestinationNavigation)
                     .WithMany(p => p._0110BonLivraisons)
                     .HasForeignKey(d => d.IdDestination)
-                    .HasConstraintName("FK_0110_BonLivraison_0000_Ville");
+                    .HasConstraintName("FK_0110_BonLivraison_0000_Ville1");
             });
 
             modelBuilder.Entity<_0110LigneBonLivraison>(entity =>

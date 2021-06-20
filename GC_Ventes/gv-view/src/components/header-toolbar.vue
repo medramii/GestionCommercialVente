@@ -67,7 +67,7 @@ export default {
     return {
       userMenuItems : [
         {
-          text: "Logout",
+          text: "Se déconnecter",
           icon: "runner",
           onClick: this.onLogoutClick
         }],
@@ -86,9 +86,6 @@ export default {
         "getSignedUser"
       ]
     ),
-    // logoutAction() {
-    //   this.$store.dispatch('login/Logout')
-    // }
   },
   methods: {
     ...mapActions({

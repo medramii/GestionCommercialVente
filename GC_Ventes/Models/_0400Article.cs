@@ -9,6 +9,7 @@ namespace GC_Ventes.Models
     {
         public _0400Article()
         {
+            _0106DetailBonEntrees = new HashSet<_0106DetailBonEntree>();
             _0110LigneBonLivraisons = new HashSet<_0110LigneBonLivraison>();
         }
 
@@ -16,6 +17,7 @@ namespace GC_Ventes.Models
         public string CodeArticle { get; set; }
         public string Designation { get; set; }
 
+        public virtual ICollection<_0106DetailBonEntree> _0106DetailBonEntrees { get; set; }
         public virtual ICollection<_0110LigneBonLivraison> _0110LigneBonLivraisons { get; set; }
     }
 }

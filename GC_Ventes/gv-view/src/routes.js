@@ -46,14 +46,28 @@ export default [
     component: loadView("bon-de-livraison")
   },
   {
-    name: "add-bon-livraison",
+    name: "gestion-bon-livraison",
     path: "/bon-de-livraison/:action/:id",
     meta: { 
       requiresAuth: true,
       layout: defaultLayout
     },
-    component: loadView("add-bon-livraison")
+    component: loadView("gestion-bon-livraison")
   },
+  {
+    name: "facturation",
+    path: "/facturation",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: loadView("facture")
+  },
+
+
+
+
+  
   {
     name: "login",
     path: "/login",
