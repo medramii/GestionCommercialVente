@@ -11,7 +11,14 @@ const router = new createRouter({
 router.beforeEach((to, from, next) => {
   const logged = !!store.state.login.signedUser; // check if the user is logged in or not
   const pages = JSON.parse(localStorage.getItem("Pages")) || [];
-  const names = pages.map(item => item.text.toLowerCase().replace(/\s/g, "-"));
+  let names = pages.map(item => item.text.toLowerCase().replace(/\s/g, "-"));
+
+  if(names.includes("home")) {
+    names.push("vente-statistics");
+  }
+  if(names.includes("bon-de-livraison")) {
+    names.push("gestion-bon-livraison");
+  }
 
   if (to.name === "default") next();
 
@@ -21,8 +28,8 @@ router.beforeEach((to, from, next) => {
   {
     if (!logged) next({name: "login"}); // redirect to login if is not logged in
     else if(names.includes(to.name)) next();
-    else if (names.includes("bon-de-livraison") && to.name === "gestion-bon-livraison") next();
     else next({ name: from.name }); // conitnue to route if logged in
+    // else if (names.includes("bon-de-livraison") && to.name === "gestion-bon-livraison") next();
   }
   else next(); // conitnue to route if a router doesn't require authentication
 });

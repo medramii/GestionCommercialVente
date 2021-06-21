@@ -5,9 +5,9 @@ export default [
     icon: "home"
   },
   {
-    text: "Tasks",
-    path: "/tasks",
-    icon: "bulletlist"
+    text: "Statistiques de vente",
+    path: "/vente-statistics",
+    icon: "chart"
   },
   {
     text: "Groups management",

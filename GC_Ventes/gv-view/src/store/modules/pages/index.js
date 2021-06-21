@@ -27,6 +27,11 @@ const pages = {
                     
                     response.data.map((item) => {
                         pages.push(item.page);
+                        /* ***** dashboard pages ******* */
+                        if (item.page == "Home") {
+                            pages.push("Statistiques de vente");
+                            // ...
+                        }
                     });
 
                     allPages.map((item) => {

@@ -1,5 +1,5 @@
 import Home from "./views/home";
-import Tasks from "./views/tasks";
+import DsVentes from "./views/ds-ventes";
 import defaultLayout from "./layouts/side-nav-inner-toolbar";
 import simpleLayout from "./layouts/single-card";
 
@@ -19,13 +19,13 @@ export default [
     component: Home
   },
   {
-    name: "tasks",
-    path: "/tasks",
+    name: "vente-statistics",
+    path: "/vente-statistics",
     meta: { 
       requiresAuth: true,
       layout: defaultLayout
     },
-    component: Tasks
+    component: DsVentes
   },
   {
     name: "groups-management",
