@@ -28,7 +28,7 @@ const pages = {
                     response.data.map((item) => {
                         pages.push(item.page);
                         /* ***** dashboard pages ******* */
-                        if (item.page == "Home") {
+                        if (item.page == "Dashboard") {
                             pages.push("Statistiques de vente");
                             // ...
                         }

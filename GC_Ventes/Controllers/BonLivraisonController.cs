@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using GC_Ventes.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GC_Ventes.Models;
-using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GC_Ventes.Controllers
 {
@@ -30,14 +28,14 @@ namespace GC_Ventes.Controllers
             {
                 int num = 1;
                 var count = _context._0110BonLivraisons.Count();
-                
+
                 if (_context._0110BonLivraisons.Any())
                 {
                     var lastBl = _context._0110BonLivraisons.OrderBy(x => x.Id).Last();
                     num = int.Parse(lastBl.NumBl.Substring(3)) + 1;
                 }
 
-                return Ok("BL-"+num);
+                return Ok("BL-" + num);
             }
             catch (Exception e)
             {
@@ -60,11 +58,12 @@ namespace GC_Ventes.Controllers
                 //.ThenInclude(l => l.CodeMagasinNavigation);
 
                 var BLs = _context._0110BonLivraisons
-                .Select(x => new { 
+                .Select(x => new
+                {
                     x.Id,
                     x.NumBl,
                     Client = x.CodeClientNavigation,
-                    Destination = x.IdDestinationNavigation!=null? x.IdDestinationNavigation.Ville : "",
+                    Destination = x.IdDestinationNavigation != null ? x.IdDestinationNavigation.Ville : "",
                     x.DateBl,
                     x.MontantDh,
                     x.TypeVente,
@@ -86,7 +85,7 @@ namespace GC_Ventes.Controllers
 
                 return Ok(BLs);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e);
             }
@@ -97,13 +96,13 @@ namespace GC_Ventes.Controllers
         public async Task<ActionResult<_0110BonLivraison>> Get_0110BonLivraison(int id)
         {
             //var _0110BonLivraison = await _context._0110BonLivraisons.FindAsync(id);
-            
+
             var Bl = _context._0110BonLivraisons
                 .Include(z => z._0110LigneBonLivraisons)
                 .ThenInclude(j => j.CodeArticleNavigation)
                 .Include(k => k._0110LigneBonLivraisons)
                 .ThenInclude(l => l.CodeMagasinNavigation)
-                .FirstOrDefault(x=>x.Id==id);
+                .FirstOrDefault(x => x.Id == id);
 
 
 
@@ -145,8 +144,8 @@ namespace GC_Ventes.Controllers
                 }
 
             }
-            
-            
+
+
             await _context.AddRangeAsync(
                 _0110BonLivraison._0110LigneBonLivraisons
                     .Where(x => !oldLignes
@@ -154,9 +153,7 @@ namespace GC_Ventes.Controllers
                         .Contains(x.Id)));
 
 
-            _context.Entry(_0110BonLivraison).State = EntityState.Modified;
-
-/**************************************************************************************************/
+            _context.Entry(_0110BonLivraison).State = EntityState.Modified;         
 
             try
             {
@@ -198,6 +195,9 @@ namespace GC_Ventes.Controllers
                 return NotFound();
             }
 
+            _context._0110LigneBonLivraisons.RemoveRange(
+                _context._0110LigneBonLivraisons.Where(x => x.IdBonLivraison == id)
+            );
             _context._0110BonLivraisons.Remove(_0110BonLivraison);
             await _context.SaveChangesAsync();
 
@@ -208,51 +208,6 @@ namespace GC_Ventes.Controllers
         {
             return _context._0110BonLivraisons.Any(e => e.Id == id);
         }
-
-        /****************************************************************/
-
-        //// GET: api/BonLivraison/Ventes/2020
-        //[HttpGet("Ventes/{year}")]
-        //public async Task<ActionResult> GetVentes(int year)
-        //{
-        //    try
-        //    {
-        //        string[] months = {
-        //            "-",
-        //            "Janvier",
-        //            "Février",
-        //            "Mars",
-        //            "Avril",
-        //            "Mai",
-        //            "Juin",
-        //            "Juillet",
-        //            "Août",
-        //            "Septembre",
-        //            "Octobre",
-        //            "Novembre",
-        //            "Décembre"
-        //        };
-                
-        //        var Ventes = from x in _context._0110BonLivraisons
-        //                     where x.DateBl.Value.Year == year
-        //                     orderby x.DateBl.Value.Month
-        //                     group x by new { x.DateBl.Value.Month }
-        //                     into y
-        //                     select new
-        //                     {
-        //                         month = months[y.Key.Month],
-        //                         local = y.Sum(i => i.TypeVente == "Local" ? i.MontantDh : 0),
-        //                         export = y.Sum(j => j.TypeVente == "Export" ? j.MontantDh : 0)
-        //                     };
-
-        //        return Ok(Ventes);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e);
-        //    }
-        //}
-
 
     }
 }

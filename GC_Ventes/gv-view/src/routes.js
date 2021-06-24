@@ -1,4 +1,4 @@
-import Home from "./views/home";
+import Dashboard from "./views/dashboard";
 import DsVentes from "./views/ds-ventes";
 import defaultLayout from "./layouts/side-nav-inner-toolbar";
 import simpleLayout from "./layouts/single-card";
@@ -9,14 +9,14 @@ function loadView(view) {
 
 export default [
   {
-    name: "home",
-    path: "/home",
+    name: "dashboard",
+    path: "/dashboard",
     replace: true,
     meta: {
       requiresAuth: true,
       layout: defaultLayout
     },
-    component: Home
+    component: Dashboard
   },
   {
     name: "vente-statistics",
@@ -63,11 +63,6 @@ export default [
     },
     component: loadView("facture")
   },
-
-
-
-
-  
   {
     name: "login",
     path: "/login",
@@ -82,7 +77,7 @@ export default [
   {
     name: "default",
     path: "/",
-    redirect: "home"
+    redirect: "dashboard"
   },
   {
     name: "default",

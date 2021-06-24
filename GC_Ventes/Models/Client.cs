@@ -10,6 +10,7 @@ namespace GC_Ventes.Models
         public Client()
         {
             _0110BonLivraisons = new HashSet<_0110BonLivraison>();
+            _0110FactureComercials = new HashSet<_0110FactureComercial>();
             _0902BonSortieMagasins = new HashSet<_0902BonSortieMagasin>();
         }
 
@@ -40,9 +41,11 @@ namespace GC_Ventes.Models
         public int? IdCompteAnalytique { get; set; }
 
         public virtual _0500ImputationsComptable IdCompteGeneralNavigation { get; set; }
+        public virtual _0200Devise IdDeviseNavigation { get; set; }
         public virtual _1000ModeReglement IdModReglementNavigation { get; set; }
         public virtual _0000Ville IdVilleNavigation { get; set; }
         public virtual ICollection<_0110BonLivraison> _0110BonLivraisons { get; set; }
+        public virtual ICollection<_0110FactureComercial> _0110FactureComercials { get; set; }
         public virtual ICollection<_0902BonSortieMagasin> _0902BonSortieMagasins { get; set; }
     }
 }

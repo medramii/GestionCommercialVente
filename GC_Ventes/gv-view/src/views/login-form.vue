@@ -80,7 +80,7 @@ export default {
       this.loginAction(this.formData)
       .then(() => {
         this.getPages();
-        this.$router.push("home");
+        this.$router.push("dashboard");
       })
       .catch(() => {
         this.loading = false;

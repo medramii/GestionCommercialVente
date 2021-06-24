@@ -26,7 +26,7 @@
       />
       <DxColumn
         :width="100"
-        data-field="numBl"
+        data-field="numFac"
         caption="Numero"
       />
       <DxColumn
@@ -34,36 +34,37 @@
         caption="Client"
       />
       <DxColumn
-        data-field="destination"
-        caption="Destination"
-      />
-      <DxColumn
-        data-field="dateBl"
+        data-field="dateFac"
         data-type="date"
-        caption="Date"
+        caption="Date de facture"
       />
       <DxColumn
-        :width="170"
+        data-field="dateEcheance"
+        data-type="date"
+        caption="Date d'echeance"
+      />
+      <DxColumn
+        data-field="modeReg.designation"
+        caption="Mode Reglement"
+      />
+      <DxColumn
         data-field="montantDh"
         caption="Prix total (Dhs)"
       />
       <DxColumn
         :width="500"
-        data-field="typeVente"
-        caption="Type de vente"
-      />
-      <DxColumn
-        :width="500"
-        data-field="devise"
+        data-field="devise.designation"
         caption="Devise"
       />
       <DxColumn
-        :width="500"
         data-field="tauxDeChange"
         caption="Taux de change"
       />
       <DxColumn
-        :width="500"
+        data-field="montantDevise"
+        caption="Prix Devise"
+      />
+      <DxColumn
         data-field="observation"
         caption="Observation"
       />
@@ -71,9 +72,9 @@
         :enabled="true"
         template="masterDetailTemplate"
       />
-      <template #masterDetailTemplate="{ data: bl }">
+      <template #masterDetailTemplate="{ data: facture }">
         <DetailTemplate
-          :BlData="bl"
+          :FactureData="facture"
         />
       </template>
     </DxDataGrid>
@@ -85,20 +86,20 @@
     />
     <DxSpeedDialAction
       :index="2"
-      :on-click="addBL"
+      :on-click="addFacture"
       icon="add"
       label="Ajouter"
     />
     <DxSpeedDialAction
       :visible="selectedRowIndex !== -1"
-      :on-click="deleteBL"
+      :on-click="deleteFacture"
       :index="3"
       icon="trash"
       label="Supprimer"
     />
     <DxSpeedDialAction
       :visible="selectedRowIndex !== -1"
-      :on-click="editBL"
+      :on-click="editFacture"
       :index="4"
       icon="edit"
       label="Modifier"
@@ -119,7 +120,7 @@ import CustomStore from 'devextreme/data/custom_store';
 import DxSpeedDialAction from 'devextreme-vue/speed-dial-action';
 import {mapGetters, mapActions} from "vuex"
 
-import DetailTemplate from '../components/bon_livraison/master-template.vue';
+import DetailTemplate from '../components/facture/master-template.vue';
 
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -131,13 +132,12 @@ export default {
       gridRefName: 'grid',
       dataSource: new CustomStore({
         key: 'id',
-        // load: this.initBLs(),
         load: async () => {
-          await this.initBLs();
-          return this.getBLs();
+          await this.initFactures();
+          return this.getFactures();
         },
         remove: () => {
-          this.onDeleteBL();
+          this.onDeleteFacture();
         }
       }),
       selectedBlId: null,
@@ -152,29 +152,29 @@ export default {
   methods: {
     ...mapGetters(
       {
-        getBLs: "bonLivraison/getBLs",
+        getFactures: "facture/getFactures",
       },
     ),
     ...mapActions(
       {
-        initBLs: "bonLivraison/initBLs",
+        initFactures: "facture/initFactures",
       }
     ),
     selectedChanged(e) {
       this.selectedBlId = e.selectedRowKeys[0];
       this.selectedRowIndex = e.component.getRowIndexByKey(e.selectedRowKeys[0]);
     },
-    addBL: function() {
-      this.$router.push({name: 'gestion-bon-livraison', params: {action: "Ajouter", id: "nouveau"}})
+    addFacture: function() {
+      this.$router.push({name: 'gestion-facture', params: {action: "Ajouter", id: "nouveau"}})
     },
-    editBL: function() {
-      this.$router.push({name: 'gestion-bon-livraison', params: {action: "Modifier", id: this.selectedBlId}})
+    editFacture: function() {
+      this.$router.push({name: 'gestion-facture', params: {action: "Modifier", id: this.selectedBlId}})
     },
-    deleteBL: async function() {
+    deleteFacture: async function() {
       this.grid.deleteRow(this.selectedRowIndex);
     },
-    onDeleteBL: function() {
-      this.$store.dispatch('bonLivraison/deleteBL', this.selectedBlId);
+    onDeleteFacture: function() {
+      this.$store.dispatch('facture/deleteFacture', this.selectedBlId);
     },
     exportGrid() {
       const doc = new jsPDF();
@@ -182,7 +182,7 @@ export default {
         jsPDFDocument: doc,
         component: this.grid
       }).then(() => {
-        doc.save('Bon_de_livraison.pdf');
+        doc.save('Factures.pdf');
       });
     }
   },

@@ -1,7 +1,7 @@
 export default [
   {
-    text: "Home",
-    path: "/home",
+    text: "Dashboard",
+    path: "/dashboard",
     icon: "home"
   },
   {

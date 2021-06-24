@@ -22,9 +22,13 @@ namespace GC_Ventes.Models
         public double? TauxDeChange { get; set; }
         public double? MontantDh { get; set; }
         public string Devise { get; set; }
+        public int? IdDevise { get; set; }
+        public int? IdFacture { get; set; }
 
         public virtual Client CodeClientNavigation { get; set; }
         public virtual _0000Ville IdDestinationNavigation { get; set; }
+        public virtual _0200Devise IdDeviseNavigation { get; set; }
+        public virtual _0110FactureComercial IdFactureNavigation { get; set; }
         public virtual ICollection<_0110LigneBonLivraison> _0110LigneBonLivraisons { get; set; }
     }
 }

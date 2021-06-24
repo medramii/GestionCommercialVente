@@ -53,7 +53,9 @@ namespace GC_Ventes.Models
         public virtual DbSet<_0108TypeMvt> _0108TypeMvts { get; set; }
         public virtual DbSet<_0109DetailFraisApproche> _0109DetailFraisApproches { get; set; }
         public virtual DbSet<_0110BonLivraison> _0110BonLivraisons { get; set; }
+        public virtual DbSet<_0110FactureComercial> _0110FactureComercials { get; set; }
         public virtual DbSet<_0110LigneBonLivraison> _0110LigneBonLivraisons { get; set; }
+        public virtual DbSet<_0200Devise> _0200Devises { get; set; }
         public virtual DbSet<_0400Article> _0400Articles { get; set; }
         public virtual DbSet<_0400ClasseArticle> _0400ClasseArticles { get; set; }
         public virtual DbSet<_0400FamilleArticle> _0400FamilleArticles { get; set; }
@@ -180,6 +182,11 @@ namespace GC_Ventes.Models
                     .WithMany(p => p.Clients)
                     .HasForeignKey(d => d.IdCompteGeneral)
                     .HasConstraintName("FK_Client_0500_Imputations_Comptables");
+
+                entity.HasOne(d => d.IdDeviseNavigation)
+                    .WithMany(p => p.Clients)
+                    .HasForeignKey(d => d.IdDevise)
+                    .HasConstraintName("FK_Client_0200_Devise");
 
                 entity.HasOne(d => d.IdModReglementNavigation)
                     .WithMany(p => p.Clients)
@@ -1966,6 +1973,10 @@ namespace GC_Ventes.Models
 
                 entity.Property(e => e.IdDestination).HasColumnName("idDestination");
 
+                entity.Property(e => e.IdDevise).HasColumnName("idDevise");
+
+                entity.Property(e => e.IdFacture).HasColumnName("idFacture");
+
                 entity.Property(e => e.MontantDh).HasColumnName("montantDH");
 
                 entity.Property(e => e.NumBl)
@@ -1991,6 +2002,70 @@ namespace GC_Ventes.Models
                     .WithMany(p => p._0110BonLivraisons)
                     .HasForeignKey(d => d.IdDestination)
                     .HasConstraintName("FK_0110_BonLivraison_0000_Ville1");
+
+                entity.HasOne(d => d.IdDeviseNavigation)
+                    .WithMany(p => p._0110BonLivraisons)
+                    .HasForeignKey(d => d.IdDevise)
+                    .HasConstraintName("FK_0110_BonLivraison_0200_Devise");
+
+                entity.HasOne(d => d.IdFactureNavigation)
+                    .WithMany(p => p._0110BonLivraisons)
+                    .HasForeignKey(d => d.IdFacture)
+                    .HasConstraintName("FK_0110_BonLivraison_0110_FactureComercial");
+            });
+
+            modelBuilder.Entity<_0110FactureComercial>(entity =>
+            {
+                entity.ToTable("0110_FactureComercial");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.CodeClient)
+                    .HasMaxLength(50)
+                    .HasColumnName("codeClient");
+
+                entity.Property(e => e.CodeModeReg)
+                    .HasMaxLength(50)
+                    .HasColumnName("codeModeReg");
+
+                entity.Property(e => e.DateEcheance)
+                    .HasColumnType("date")
+                    .HasColumnName("dateEcheance");
+
+                entity.Property(e => e.DateFac)
+                    .HasColumnType("date")
+                    .HasColumnName("dateFac");
+
+                entity.Property(e => e.IdDevise).HasColumnName("idDevise");
+
+                entity.Property(e => e.MontantDevise).HasColumnName("montantDevise");
+
+                entity.Property(e => e.MontantDh).HasColumnName("montantDh");
+
+                entity.Property(e => e.NumFac)
+                    .HasMaxLength(50)
+                    .HasColumnName("numFac");
+
+                entity.Property(e => e.Observation)
+                    .HasMaxLength(250)
+                    .HasColumnName("observation");
+
+                entity.Property(e => e.TauxDeChange).HasColumnName("tauxDeChange");
+
+                entity.HasOne(d => d.CodeClientNavigation)
+                    .WithMany(p => p._0110FactureComercials)
+                    .HasForeignKey(d => d.CodeClient)
+                    .HasConstraintName("FK_0110_FactureComercial_Client");
+
+                entity.HasOne(d => d.CodeModeRegNavigation)
+                    .WithMany(p => p._0110FactureComercials)
+                    .HasForeignKey(d => d.CodeModeReg)
+                    .HasConstraintName("FK_0110_FactureComercial_1000_ModeReglement");
+
+                entity.HasOne(d => d.IdDeviseNavigation)
+                    .WithMany(p => p._0110FactureComercials)
+                    .HasForeignKey(d => d.IdDevise)
+                    .HasConstraintName("FK_0110_FactureComercial_0200_Devise");
             });
 
             modelBuilder.Entity<_0110LigneBonLivraison>(entity =>
@@ -2030,6 +2105,19 @@ namespace GC_Ventes.Models
                     .WithMany(p => p._0110LigneBonLivraisons)
                     .HasForeignKey(d => d.IdBonLivraison)
                     .HasConstraintName("FK_0110_LigneBonLivraison_0110_BonLivraison");
+            });
+
+            modelBuilder.Entity<_0200Devise>(entity =>
+            {
+                entity.ToTable("0200_Devise");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Designation)
+                    .HasMaxLength(50)
+                    .HasColumnName("designation");
+
+                entity.Property(e => e.TauxDeChange).HasColumnName("tauxDeChange");
             });
 
             modelBuilder.Entity<_0400Article>(entity =>

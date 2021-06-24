@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) => {
   const pages = JSON.parse(localStorage.getItem("Pages")) || [];
   let names = pages.map(item => item.text.toLowerCase().replace(/\s/g, "-"));
 
-  if(names.includes("home")) {
+  if(names.includes("dashboard")) {
     names.push("vente-statistics");
   }
   if(names.includes("bon-de-livraison")) {
@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
 
   if (to.name === "default") next();
 
-  if (to.name === "login" && logged) next({ name: "home" }); // if user is logged . redirect to home
+  if (to.name === "login" && logged) next({ name: "dashboard" }); // if user is logged . redirect to home
 
   if (to.matched.some(record => record.meta.requiresAuth)) // if a router requires authentication
   {

@@ -12,6 +12,7 @@ namespace GC_Ventes.Models
             Clients = new HashSet<Client>();
             _0103BonCommandeAchats = new HashSet<_0103BonCommandeAchat>();
             _0105FactureFournisseurs = new HashSet<_0105FactureFournisseur>();
+            _0110FactureComercials = new HashSet<_0110FactureComercial>();
             _0400Fournisseurs = new HashSet<_0400Fournisseur>();
         }
 
@@ -21,6 +22,7 @@ namespace GC_Ventes.Models
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<_0103BonCommandeAchat> _0103BonCommandeAchats { get; set; }
         public virtual ICollection<_0105FactureFournisseur> _0105FactureFournisseurs { get; set; }
+        public virtual ICollection<_0110FactureComercial> _0110FactureComercials { get; set; }
         public virtual ICollection<_0400Fournisseur> _0400Fournisseurs { get; set; }
     }
 }
