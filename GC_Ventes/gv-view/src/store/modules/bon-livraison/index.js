@@ -40,7 +40,6 @@ const bonLivraison = {
         // for delete
         deleteBL: ({commit}, payLoad) => {
             console.log(!!commit);
-            console.log(payLoad);
             return new Promise((resolve, reject) => {
                 Api.delete(MAIN_END_POINT + payLoad)
                 .then((response) => {

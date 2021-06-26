@@ -19,6 +19,9 @@ router.beforeEach((to, from, next) => {
   if(names.includes("bon-de-livraison")) {
     names.push("gestion-bon-livraison");
   }
+  if(names.includes("facturation")) {
+    names.push("gestion-facture");
+  }
 
   if (to.name === "default") next();
 

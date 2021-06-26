@@ -64,6 +64,15 @@ export default [
     component: loadView("facture")
   },
   {
+    name: "gestion-facture",
+    path: "/facturation/:action/:id",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: loadView("gestion-facture")
+  },
+  {
     name: "login",
     path: "/login",
     replace: true,

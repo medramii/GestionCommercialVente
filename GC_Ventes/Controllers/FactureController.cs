@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GC_Ventes.Models;
+using GC_Ventes.Models.VueModels;
 
 namespace GC_Ventes.Controllers
 {
@@ -18,6 +19,29 @@ namespace GC_Ventes.Controllers
         public FactureController(WEB_GC_Context context)
         {
             _context = context;
+        }
+
+        // GET: api/Facture/NextFacture
+        [HttpGet("NextFacture")]
+        public async Task<ActionResult> GetNextFacture()
+        {
+            try
+            {
+                int num = 1;
+                var count = _context._0110FactureComercials.Count();
+
+                if (_context._0110FactureComercials.Any())
+                {
+                    var lastFac = _context._0110FactureComercials.OrderBy(x => x.Id).Last();
+                    num = int.Parse(lastFac.NumFac.Substring(3)) + 1;
+                }
+
+                return Ok("FC-" + num);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         // GET: api/Facture
@@ -61,31 +85,106 @@ namespace GC_Ventes.Controllers
             }
         }
 
+        // GET: api/Facture/Livraisons/5
+        [HttpGet("Livraisons/{idFacture}/{codeClient}/{dateFacture}")]
+        public async Task<ActionResult> GetLivraisons(int idFacture, string codeClient, DateTime dateFacture)
+        {
+            try
+            {
+                var livraisons = _context._0110BonLivraisons
+                    .Where(y => 
+                        y.CodeClient == codeClient
+                        && (
+                            y.IdFacture == idFacture
+                            ||
+                            (y.IdFacture == null && y.DateBl <= dateFacture)
+                        )
+                    )
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.NumBl,
+                        Destination = x.IdDestinationNavigation != null ? x.IdDestinationNavigation.Ville : "",
+                        x.DateBl,
+                        x.MontantDh,
+                        x.Observation,
+                        facture = x.IdFacture == idFacture,
+                        Client = x.CodeClientNavigation,
+                        LignesBl = x._0110LigneBonLivraisons.Select(y => new
+                        {
+                            y.Id,
+                            y.CodeArticle,
+                            y.CodeMagasin,
+                            y.Qte,
+                            y.Prix,
+                            y.Montant,
+                            Article = y.CodeArticleNavigation,
+                            Magasin = y.CodeMagasinNavigation,
+                        }),
+                    });
+                    
+
+                return Ok(livraisons);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
         // GET: api/Facture/5
         [HttpGet("{id}")]
         public async Task<ActionResult<_0110FactureComercial>> Get_0110FactureComercial(int id)
         {
-            var _0110FactureComercial = await _context._0110FactureComercials.FindAsync(id);
+            //var _0110FactureComercial = await _context._0110FactureComercials.FindAsync(id);
 
-            if (_0110FactureComercial == null)
+            var facture = _context._0110FactureComercials
+                    .Where(y=>y.Id==id)
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.CodeClient,
+                        x.NumFac,
+                        DateFacture = x.DateFac,
+                        x.DateEcheance,
+                        ModeReglement = x.CodeModeReg,
+                        Devise = x.IdDevise,
+                        x.TauxDeChange,
+                        x.MontantDevise,
+                        x.MontantDh,
+                        x.Observation
+                    });
+
+            if (facture == null)
             {
                 return NotFound();
             }
 
-            return _0110FactureComercial;
+            return Ok(facture);
         }
 
         // PUT: api/Facture/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put_0110FactureComercial(int id, _0110FactureComercial _0110FactureComercial)
+        public async Task<IActionResult> Put_0110FactureComercial(int id, FactureCreds FactureData)
         {
-            if (id != _0110FactureComercial.Id)
+            var facture = FactureData.facture;
+
+            if (id != facture.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(_0110FactureComercial).State = EntityState.Modified;
+            var lvrs = _context._0110BonLivraisons.Where(x => x.IdFacture == id).ToList();
+            lvrs.ForEach(e => e.IdFacture = null);
+
+            foreach (int i in FactureData.livraisons)
+            {
+                var lvr = _context._0110BonLivraisons.Where(x => x.Id == i).FirstOrDefault();
+                lvr.IdFacture = id;
+            }
+
+            _context.Entry(facture).State = EntityState.Modified;
 
             try
             {
@@ -109,12 +208,23 @@ namespace GC_Ventes.Controllers
         // POST: api/Facture
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<_0110FactureComercial>> Post_0110FactureComercial(_0110FactureComercial _0110FactureComercial)
+        public async Task<ActionResult<_0110FactureComercial>> Post_0110FactureComercial(FactureCreds FactureData)
         {
-            _context._0110FactureComercials.Add(_0110FactureComercial);
+            var facture = FactureData.facture;
+            
+            _context._0110FactureComercials.Add(facture);
             await _context.SaveChangesAsync();
+            
+            var id = facture.Id;
 
-            return CreatedAtAction("Get_0110FactureComercial", new { id = _0110FactureComercial.Id }, _0110FactureComercial);
+            foreach (int i in FactureData.livraisons)
+            {
+                var lvr = _context._0110BonLivraisons.Where(x => x.Id == i).FirstOrDefault();
+                lvr.IdFacture = id;
+                _context.SaveChanges();
+            }
+
+            return CreatedAtAction("Get_0110FactureComercial", new { id = facture.Id }, facture);
         }
 
         // DELETE: api/Facture/5
@@ -126,6 +236,9 @@ namespace GC_Ventes.Controllers
             {
                 return NotFound();
             }
+
+            var lvrs = _context._0110BonLivraisons.Where(x => x.IdFacture == id).ToList();
+            lvrs.ForEach(e => e.IdFacture = null);
 
             _context._0110FactureComercials.Remove(_0110FactureComercial);
             await _context.SaveChangesAsync();

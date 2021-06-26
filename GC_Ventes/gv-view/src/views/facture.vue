@@ -140,7 +140,7 @@ export default {
           this.onDeleteFacture();
         }
       }),
-      selectedBlId: null,
+      selectedFacId: null,
       selectedRowIndex: -1
     };
   },
@@ -161,20 +161,20 @@ export default {
       }
     ),
     selectedChanged(e) {
-      this.selectedBlId = e.selectedRowKeys[0];
+      this.selectedFacId = e.selectedRowKeys[0];
       this.selectedRowIndex = e.component.getRowIndexByKey(e.selectedRowKeys[0]);
     },
     addFacture: function() {
       this.$router.push({name: 'gestion-facture', params: {action: "Ajouter", id: "nouveau"}})
     },
     editFacture: function() {
-      this.$router.push({name: 'gestion-facture', params: {action: "Modifier", id: this.selectedBlId}})
+      this.$router.push({name: 'gestion-facture', params: {action: "Modifier", id: this.selectedFacId}})
     },
     deleteFacture: async function() {
       this.grid.deleteRow(this.selectedRowIndex);
     },
     onDeleteFacture: function() {
-      this.$store.dispatch('facture/deleteFacture', this.selectedBlId);
+      this.$store.dispatch('facture/deleteFacture', this.selectedFacId);
     },
     exportGrid() {
       const doc = new jsPDF();

@@ -34,7 +34,7 @@
             value: getBl.codeClient,
             searchEnabled: true,
             items: getClients,
-            displayExpr: 'raisonSociale', // here will be the raisonSocial instead of codeClient
+            displayExpr: 'raisonSociale',
             valueExpr: 'codeClient',
           }"
           data-field="codeClient"

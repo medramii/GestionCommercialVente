@@ -1,7 +1,8 @@
 <template>
   <div>
-    <form id="form-container" class="content-block" @submit.prevent="SaveBl()">
-      <DxForm :form-data="getFacture" id="form" :col-count="3">
+    <form id="form-container" class="content-block" @submit.prevent="SaveFacture()">
+      <DxForm :form-data="getFacture" id="form" :col-count="3" 
+        @field-data-changed="NotifyLivraisons">
         <DxItem :col-span="2">
           <template #default>
             <div>
@@ -17,8 +18,7 @@
                   margin-right: 5px;
                 "
               />
-              <!-- <h2 style="display: contents">{{ action }} facture</h2> -->
-              <h2 style="display: contents">Ajouter facture</h2>
+              <h2 style="display: contents">{{ action }} facture</h2>
             </div>
           </template>
         </DxItem>
@@ -27,8 +27,8 @@
           horizontal-alignment="right"
         />
         <DxItem
-          :editor-options="{ value: getNextBl, disabled: true }"
-          data-field="numBl"
+          :editor-options="{ value: getNextFacture, disabled: true }"
+          data-field="numFacture"
         />
         <DxItem
           :editor-options="{
@@ -38,10 +38,13 @@
             displayExpr: 'raisonSociale',
             valueExpr: 'codeClient',
           }"
-          data-field="codeClient"
+          data-field="client"
           editor-type="dxSelectBox"
         >
           <DxRequiredRule message="Client est obligatoire" />
+        </DxItem>
+        <DxItem data-field="dateFacture" editor-type="dxDateBox">
+          <DxRequiredRule message="La date est obligatoire" />
         </DxItem>
         <DxItem
           :editor-options="{
@@ -49,14 +52,28 @@
             items: ['Local', 'Export'],
           }"
           editor-type="dxSelectBox"
-          data-field="typeVente"
+          data-field="typeDeVente"
         >
           <DxRequiredRule message="Type de vente est obligatoire" />
         </DxItem>
         <DxItem
           :editor-options="{
-            value: 'MAD',
-            items: ['MAD', 'USD', 'EUR'],
+            value: 'ESP',
+            items: getModesReglement,
+            displayExpr: 'designation',
+            valueExpr: 'codeModeReg',
+          }"
+          editor-type="dxSelectBox"
+          data-field="modeReglement"
+        >
+          <DxRequiredRule message="Devise est obligatoire" />
+        </DxItem>
+        <DxItem
+          :editor-options="{
+            value: 1,
+            items: getDevises,
+            displayExpr: 'designation',
+            valueExpr: 'id',
           }"
           editor-type="dxSelectBox"
           data-field="devise"
@@ -66,11 +83,19 @@
         <DxItem
           data-field="tauxDeChange"
           editor-type="dxNumberBox"
-          :editor-options="{ value: 1, min: '1' }"
+          :editor-options="{ value: 1, min: '1', max: '15' }"
         >
           <DxRequiredRule message="Taux de change est obligatoire" />
         </DxItem>
-        <DxItem data-field="dateBl" editor-type="dxDateBox">
+        <DxItem
+          :editor-options="{ value: 0, disabled: true }"
+          data-field="montantDevise"
+        />
+        <DxItem
+          :editor-options="{ value: 0, disabled: true }"
+          data-field="montantDh"
+        />
+        <DxItem data-field="dateEcheance" editor-type="dxDateBox">
           <DxRequiredRule message="La date est obligatoire" />
         </DxItem>
         <DxItem :col-span="2" data-field="observation" />
@@ -81,35 +106,24 @@
 
     <DxDataGrid
       class="content-block"
-      :focused-row-enabled="true"
-      :column-auto-width="true"
       :column-hiding-enabled="true"
-      id="grid-container"
-      :ref="gridRefName"
-      :selection="{ mode: 'single' }"
-      :show-borders="false"
-      :data-source="dataSource"
-      @selection-changed="selectedChanged"
-    >
-      <DxFilterRow :visible="true" />
-      <DxPaging 
-        :page-size="10"
-      />
-      <DxPager 
-        :show-page-size-selector="true" 
-        :show-info="true" 
-      />
+      :show-borders="true"
+      :data-source="getLivraisons"
+    > 
       <DxEditing
+        :allow-updating="true"
+        mode="cell"
         refresh-mode="repaint"
+      />
+      <DxColumn
+        :width="100"
+        data-field="facture"
+        caption="Facturé"
       />
       <DxColumn
         :width="100"
         data-field="numBl"
         caption="Numero"
-      />
-      <DxColumn
-        data-field="client.raisonSociale"
-        caption="Client"
       />
       <DxColumn
         data-field="destination"
@@ -124,21 +138,6 @@
         :width="170"
         data-field="montantDh"
         caption="Prix total (Dhs)"
-      />
-      <DxColumn
-        :width="500"
-        data-field="typeVente"
-        caption="Type de vente"
-      />
-      <DxColumn
-        :width="500"
-        data-field="devise"
-        caption="Devise"
-      />
-      <DxColumn
-        :width="500"
-        data-field="tauxDeChange"
-        caption="Taux de change"
       />
       <DxColumn
         :width="500"
@@ -169,7 +168,8 @@ import {
   DxRequiredRule,
   DxButtonItem,
 } from "devextreme-vue/form";
-import { DxDataGrid, DxEditing, DxColumn } from "devextreme-vue/data-grid";
+import { DxDataGrid, DxEditing, DxColumn, DxMasterDetail, } from "devextreme-vue/data-grid";
+import DetailTemplate from '../components/bon_livraison/master-template.vue';
 import DxButton from "devextreme-vue/button";
 import notify from "devextreme/ui/notify";
 import { mapActions, mapGetters } from "vuex";
@@ -184,6 +184,8 @@ export default {
     DxDataGrid,
     DxEditing,
     DxColumn,
+    DxMasterDetail,
+    DetailTemplate
   },
   data() {
     return {
@@ -199,51 +201,75 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getFacture: "bonLivraison/getBlInUse",
-      getNextBl: "bonLivraison/getNextBl",
-      getLignesBl: "bonLivraison/getLignesBl",
+      getFacture: "facture/getFactureInUse",
+      getNextFacture: "facture/getNextFacture",
+      getLivraisons: "facture/getLivraisons",
       getClients: "config/getClients",
-      getVilles: "config/getVilles",
-      getArticles: "config/getArticles",
-      getMagasins: "config/getMagasins",
+      getDevises: "config/getDevises",
+      getModesReglement: "config/getModesReglement",
     }),
   },
   methods: {
     ...mapActions({
-      initDataForAdd: "bonLivraison/initDataForAdd",
-      initDataForUpdate: "bonLivraison/initDataForUpdate",
-      addBl: "bonLivraison/addBL",
-      configData: "config/initConfig",
+      refreshLivraisons: "facture/refreshLivraisons",
+      initDataForAdd: "facture/initDataForAdd",
+      initDataForUpdate: "facture/initDataForUpdate",
+      addFacture: "facture/addFacture",
+      InitConfigData: "config/initConfig",
     }),
+    NotifyLivraisons(e) {
+      if (e.dataField == "client" || e.dataField == "dateFacture") {
+        let date = new Date(
+            this.getFacture.dateFacture
+          ).toLocaleDateString("fr-CA", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+        if (date != 'Invalid Date' && this.getFacture.client != '') {
+          this.refreshLivraisons(
+            {
+              "idFac": isNaN(this.id) ? 0 : this.id,
+              "codeClient": this.getFacture.client == '' ? this.getFacture.codeClient : this.getFacture.client,
+              "dateFac": date,
+            }
+          );
+        }
+      }
+    },
     dataValidation() {
-      if (this.getLignesBl.length < 1) {
-        return "La livraison doit contenir au moins un article...!!?";
+      let livraisons = [];
+      this.getLivraisons.forEach(e => {
+          if (e.facture) livraisons.push(e.id);
+      });
+      if (livraisons.length < 1) {
+        return "La facture doit contenir au moins une livraison...!!?";
       } else return true;
     },
-    SaveBl() {
+    SaveFacture() {
       if (this.dataValidation() === true) {
         if (this.action == "Ajouter") {
-          // this.$store.dispatch('bonLivraison/addBL');
-          this.addBl()
+          this.addFacture()
             .then(() => {
               notify(
-                "Le bon de livraison a etes ajouté avec success...!!",
+                "La facture a etes ajouté avec success...!!",
                 "success",
                 2000
               );
-              this.$router.go(-1);
+              this.$router.back();
             })
             .catch(() => {
               notify("Echec..!!", "error", 1500);
             });
-        } else if (this.action == "Modifier" && this.id > 0) {
-          this.$store.dispatch("bonLivraison/editBL", this.id);
+        }
+        else if (this.action == "Modifier" && this.id > 0) {
+          this.$store.dispatch("facture/editFacture", this.id);
           notify(
-            "Le bon de livraison a etes modifié avec success...!!",
+            "La facture a etes modifié avec success...!!",
             "success",
             2000
           );
-          this.$router.go(-1);
+          this.$router.back();
         }
       } else {
         notify(this.dataValidation(), "error", 2000);
@@ -251,10 +277,23 @@ export default {
     },
   },
   beforeMount() {
-
+    if (this.action == "Ajouter" && this.id == "nouveau") {
+      this.InitConfigData();
+      this.initDataForAdd();
+    } else if (this.action == "Modifier" && this.id > 0) {
+      this.InitConfigData();
+      this.initDataForUpdate(this.id)
+        .catch(() => {
+          this.$router.back();
+        });
+    } else {
+      this.$router.back();
+    }
   },
   beforeUnmount() {
-    
+    this.$store.commit("facture/setFactureInUse", []);
+    this.$store.commit("facture/setLivraisons", []);
+    this.$store.commit("facture/setNextFacture", "");
   },
 };
 </script>
