@@ -2134,7 +2134,39 @@ namespace GC_Ventes.Models
                     .HasMaxLength(50)
                     .HasColumnName("codeArticle");
 
+                entity.Property(e => e.CodeFamille)
+                    .HasMaxLength(50)
+                    .HasColumnName("codeFamille");
+
+                entity.Property(e => e.Description1)
+                    .HasMaxLength(50)
+                    .HasColumnName("description1");
+
                 entity.Property(e => e.Designation).HasMaxLength(50);
+
+                entity.Property(e => e.ModeStock)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("modeStock");
+
+                entity.Property(e => e.NbrUlivParUachat).HasColumnName("nbrULivParUAchat");
+
+                entity.Property(e => e.StockAlerte).HasColumnName("stockAlerte");
+
+                entity.Property(e => e.UniteAchat)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("uniteAchat");
+
+                entity.Property(e => e.UniteLivraison)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("uniteLivraison");
+
+                entity.HasOne(d => d.CodeFamilleNavigation)
+                    .WithMany(p => p._0400Articles)
+                    .HasForeignKey(d => d.CodeFamille)
+                    .HasConstraintName("FK_0400_Article_0400_FamilleArticle");
             });
 
             modelBuilder.Entity<_0400ClasseArticle>(entity =>

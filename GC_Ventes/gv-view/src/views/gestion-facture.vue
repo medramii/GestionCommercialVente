@@ -31,8 +31,22 @@
           data-field="numFacture"
         />
         <DxItem
+          v-if="action=='Modifier'"
           :editor-options="{
             value: getFacture.codeClient,
+            searchEnabled: true,
+            items: getClients,
+            displayExpr: 'raisonSociale',
+            valueExpr: 'codeClient',
+          }"
+          data-field="client"
+          editor-type="dxSelectBox"
+        >
+          <DxRequiredRule message="Client est obligatoire" />
+        </DxItem>
+        <DxItem
+          v-if="action=='Ajouter'"
+          :editor-options="{
             searchEnabled: true,
             items: getClients,
             displayExpr: 'raisonSociale',
@@ -70,7 +84,7 @@
         </DxItem>
         <DxItem
           :editor-options="{
-            value: 1,
+            value: getFacture.devise,
             items: getDevises,
             displayExpr: 'designation',
             valueExpr: 'id',
@@ -83,16 +97,21 @@
         <DxItem
           data-field="tauxDeChange"
           editor-type="dxNumberBox"
-          :editor-options="{ value: 1, min: '1', max: '15' }"
+          :editor-options="{ 
+            disabled: tcEnabled,
+            value: getFacture.tauxDeChange,
+            min: '1', 
+            max: '15' 
+          }"
         >
           <DxRequiredRule message="Taux de change est obligatoire" />
         </DxItem>
         <DxItem
-          :editor-options="{ value: 0, disabled: true }"
+          :editor-options="{ value: getFacture.montantDevise, disabled: true }"
           data-field="montantDevise"
         />
         <DxItem
-          :editor-options="{ value: 0, disabled: true }"
+          :editor-options="{ value: getFacture.montantDh, disabled: true }"
           data-field="montantDh"
         />
         <DxItem data-field="dateEcheance" editor-type="dxDateBox">
@@ -109,6 +128,7 @@
       :column-hiding-enabled="true"
       :show-borders="true"
       :data-source="getLivraisons"
+      @editing-start="updated"
     > 
       <DxEditing
         :allow-updating="true"
@@ -197,6 +217,7 @@ export default {
         stylingMode: "text",
         useSubmitBehavior: true,
       },
+      tcEnabled: false
     };
   },
   computed: {
@@ -217,7 +238,24 @@ export default {
       addFacture: "facture/addFacture",
       InitConfigData: "config/initConfig",
     }),
+    updated() {
+      let montant = 0;
+      this.getLivraisons.forEach(e => {
+          if (e.facture) {
+            montant += e.montantDh;
+          }
+      });
+      this.getFacture.montantDh = montant.toFixed(2);
+      this.getFacture.montantDevise = (montant/this.getFacture.tauxDeChange).toFixed(2);
+    },
     NotifyLivraisons(e) {
+      if (e.dataField == "devise") {
+        if (e.value == 1) {
+          this.getFacture.tauxDeChange = 1;
+          this.tcEnabled = true;
+        } else this.tcEnabled = false;
+        
+      }
       if (e.dataField == "client" || e.dataField == "dateFacture") {
         let date = new Date(
             this.getFacture.dateFacture
