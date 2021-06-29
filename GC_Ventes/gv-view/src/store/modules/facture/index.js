@@ -153,7 +153,20 @@ const bonLivraison = {
             });
 
         },
-        
+        // for print
+        getFactureById: ({commit}, id) => {
+            console.log(!!commit);
+            console.log(id);
+            return new Promise((resolve, reject) => {
+                Api.get(MAIN_END_POINT + id)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
     }
     
 };

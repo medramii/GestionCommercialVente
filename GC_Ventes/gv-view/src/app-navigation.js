@@ -10,8 +10,13 @@ export default [
     icon: "chart"
   },
   {
-    text: "Groups management",
-    path: "/groups-management",
+    text: "État du bon de livraison",
+    path: "/etat-bon-livraison",
+    icon: "exportselected"
+  },
+  {
+    text: "Gestion des groupes",
+    path: "/gestion-des-groupes",
     icon: "group"
   },
   {
@@ -25,9 +30,8 @@ export default [
     icon: "money"
   },
   {
-    text: "Page4",
+    text: "Gestion de stock",
     path: "#/",
     icon: "box"
-    // items: [{}]
   }
 ];

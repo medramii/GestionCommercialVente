@@ -82,7 +82,13 @@
         >
           <DxRequiredRule message="Taux de change est obligatoire" />
         </DxItem>
-        <DxItem data-field="dateBl" editor-type="dxDateBox">
+        <DxItem
+          :editor-options="{
+            max: new Date(),
+          }"
+          data-field="dateBl"
+          editor-type="dxDateBox"
+        >
           <DxRequiredRule message="La date est obligatoire" />
         </DxItem>
         <DxItem :col-span="2" data-field="observation" />

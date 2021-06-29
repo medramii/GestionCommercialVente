@@ -60,6 +60,29 @@ namespace GC_Ventes.Controllers
                 return BadRequest(e);
             }
         }
+        // GET: api/Dashboard/Livraisons/1-6-2021/30-6-2021
+        [HttpGet("Livraisons/{start}/{end}")]
+        public async Task<ActionResult> GetLivraisons(DateTime start, DateTime end)
+        {
+            try
+            {
+                var Livraisons = from x in _context._0110BonLivraisons
+                             where x.DateBl >= start && x.DateBl <= end
+                             group x by new { x.IdFacture }
+                             into y
+                             select new
+                             {
+                                 facture = y.Key.IdFacture == null ? "Non Facturé" : "Facturé",
+                                 count = y.Count(),
+                             };
+
+                return Ok(Livraisons);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
 
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="content-block">Groups Management</h2>
+    <h2 class="content-block">Gestion des groupes d'utilisateurs</h2>
     <div class="content-block">
         <rights/>
     </div>

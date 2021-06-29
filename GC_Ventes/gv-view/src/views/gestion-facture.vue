@@ -141,25 +141,30 @@
         caption="Facturé"
       />
       <DxColumn
+        :editor-options="{ disabled: true }"
         :width="100"
         data-field="numBl"
         caption="Numero"
       />
       <DxColumn
+        :editor-options="{ disabled: true }"
         data-field="destination"
         caption="Destination"
       />
       <DxColumn
+        :editor-options="{ disabled: true }"
         data-field="dateBl"
         data-type="date"
         caption="Date"
       />
       <DxColumn
+        :editor-options="{ disabled: true }"
         :width="170"
         data-field="montantDh"
         caption="Prix total (Dhs)"
       />
       <DxColumn
+        :editor-options="{ disabled: true }"
         :width="500"
         data-field="observation"
         caption="Observation"
@@ -189,7 +194,7 @@ import {
   DxButtonItem,
 } from "devextreme-vue/form";
 import { DxDataGrid, DxEditing, DxColumn, DxMasterDetail, } from "devextreme-vue/data-grid";
-import DetailTemplate from '../components/bon_livraison/master-template.vue';
+import DetailTemplate from '../components/facture/livraisons-template.vue';
 import DxButton from "devextreme-vue/button";
 import notify from "devextreme/ui/notify";
 import { mapActions, mapGetters } from "vuex";
@@ -255,6 +260,9 @@ export default {
           this.tcEnabled = true;
         } else this.tcEnabled = false;
         
+      }
+      if (e.dataField == "tauxDeChange") {
+        this.updated();
       }
       if (e.dataField == "client" || e.dataField == "dateFacture") {
         let date = new Date(

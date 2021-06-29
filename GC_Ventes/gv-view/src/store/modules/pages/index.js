@@ -30,6 +30,7 @@ const pages = {
                         /* ***** dashboard pages ******* */
                         if (item.page == "Dashboard") {
                             pages.push("Statistiques de vente");
+                            pages.push("État du bon de livraison");
                             // ...
                         }
                     });

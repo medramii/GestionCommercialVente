@@ -1,5 +1,6 @@
 import Dashboard from "./views/dashboard";
 import DsVentes from "./views/ds-ventes";
+import DsLivraisons from "./views/ds-livraisons";
 import defaultLayout from "./layouts/side-nav-inner-toolbar";
 import simpleLayout from "./layouts/single-card";
 
@@ -28,8 +29,17 @@ export default [
     component: DsVentes
   },
   {
-    name: "groups-management",
-    path: "/groups-management",
+    name: "etat-bon-livraison",
+    path: "/etat-bon-livraison",
+    meta: { 
+      requiresAuth: true,
+      layout: defaultLayout
+    },
+    component: DsLivraisons
+  },
+  {
+    name: "gestion-des-groupes",
+    path: "/gestion-des-groupes",
     meta: { 
       requiresAuth: true,
       layout: defaultLayout

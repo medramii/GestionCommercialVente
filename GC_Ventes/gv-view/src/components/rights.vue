@@ -6,6 +6,7 @@
         <div class="dx-field-value">
           <DxSelectBox
             :search-enabled="true"
+            :value="1"
             :data-source="getGroups()"
             display-expr="name"
             value-expr="id"
@@ -37,7 +38,7 @@
       />
       <DxColumn
         data-field="hasAccess"
-        caption="Has access ??"
+        caption="Droit d'access"
       />
     </DxDataGrid>
   </div>
@@ -98,6 +99,7 @@ export default {
   },
   mounted() {
     this.setGroups();
+    this.setRights(1);
   }
 };
 </script>

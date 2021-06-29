@@ -136,8 +136,6 @@ namespace GC_Ventes.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<_0110FactureComercial>> Get_0110FactureComercial(int id)
         {
-            //var _0110FactureComercial = await _context._0110FactureComercials.FindAsync(id);
-
             var facture = _context._0110FactureComercials
                     .Where(y=>y.Id==id)
                     .Select(x => new
@@ -152,7 +150,18 @@ namespace GC_Ventes.Controllers
                         x.TauxDeChange,
                         x.MontantDevise,
                         x.MontantDh,
-                        x.Observation
+                        x.Observation,
+                        NomClient = x.CodeClientNavigation.RaisonSociale,
+                        AddressClient = x.CodeClientNavigation.Adresse,
+                        DeviseDetails = x.IdDeviseNavigation,
+                        ModeReglementDetails = x.CodeModeRegNavigation,
+                        LignesFacture = x._0110BonLivraisons.Select(i => new {
+                            Livraison = i.NumBl,
+                            Date = i.DateBl,
+                            Destination = i.IdDestinationNavigation.Ville,
+                            TypeDeVente = i.TypeVente,
+                            i.MontantDh
+                        })
                     });
 
             if (facture == null)

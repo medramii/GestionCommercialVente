@@ -2,13 +2,22 @@
   <div>
     <div class="dx-fieldset">
       <div class="dx-field">
-        <div class="dx-field-label" style="font-size: 16px">Année</div>
+        <div class="dx-field-label" style="font-size: 16px">Date début</div>
         <div class="dx-field-value">
-          <DxSelectBox
-            :search-enabled="true"
-            :data-source="years"
-            :value="2021"
-            @value-changed="onYearChange"
+          <DxDateBox
+            :value="date.start"
+            type="date"
+            @value-changed="onDateChange"
+          />
+        </div>
+        <div class="dx-field-label"></div>
+        <div class="dx-field-label" style="font-size: 16px">Date fin</div>
+        <div class="dx-field-value">
+          <DxDateBox
+            :value="date.end"
+
+            type="date"
+            @value-changed="onDateChange"
           />
         </div>
       </div>
@@ -45,7 +54,6 @@
               :key="type.value"
               :value-field="type.value"
               :name="type.name"
-              type= "spline"
             />
             <DxMargin :bottom="20" />
             <DxArgumentAxis
@@ -75,11 +83,11 @@
           <DxPieChart
             class="dx-card responsive-paddings"
             id="pie"
-            :data-source="this.getTotal"
+            :data-source="this.getLivraisons"
             palette="Carmine"
             title="Revenu total par année (Dhs)"
           >
-            <DxSeries argument-field="type" value-field="montant">
+            <DxSeries argument-field="facture" value-field="count">
               <DxLabel
                 :visible="true"
                 :customize-text="formatLabel"
@@ -112,7 +120,7 @@ import {
   DxCol,
   DxRow,
 } from "devextreme-vue/responsive-box";
-import DxSelectBox from "devextreme-vue/select-box";
+import DxDateBox from 'devextreme-vue/date-box';
 import { mapActions, mapGetters } from "vuex";
 import {
   DxChart,
@@ -140,7 +148,7 @@ export default {
     DxLocation,
     DxCol,
     DxRow,
-    DxSelectBox,
+    DxDateBox,
     DxChart,
     DxSeries,
     DxArgumentAxis,
@@ -163,25 +171,45 @@ export default {
       screen(width) {
         return width < 1000 ? "sm" : "lg";
       },
-      years: [2019, 2020, 2021],
+      date: {
+        "start": new Date(),
+        "end": new Date()
+      },
       typeVente: [
-        { value: "local", name: "Local" },
-        { value: "export", name: "Export" },
+        { value: "facture", name: "Facturé" },
+        { value: "count", name: "Non Facturé" },
       ],
     };
   },
   computed: {
     ...mapGetters({
       getVentes: "dashboard/getVentes",
-      getTotal: "dashboard/getTotal",
+      getLivraisons: "dashboard/getLivraisons",
     }),
   },
   methods: {
     ...mapActions({
       initVentes: "dashboard/initVentes",
+      initLivraisons: "dashboard/initLivraisons",
     }),
-    onYearChange: function (e) {
-      this.initVentes(e.value);
+    onDateChange: function () {
+      let start = new Date(
+            this.date.start
+          ).toLocaleDateString("fr-CA", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+      let end = new Date(
+              this.date.end
+            ).toLocaleDateString("fr-CA", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            });
+
+      console.log({start, end});
+      this.initLivraisons({start, end});
     },
     formatLabel(pointInfo) {
       return `${pointInfo.valueText} (${pointInfo.percentText})`;
@@ -189,6 +217,21 @@ export default {
   },
   beforeMount() {
     this.initVentes(2021);
+    let start = new Date(
+            this.date.start
+          ).toLocaleDateString("fr-CA", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+    let end = new Date(
+            this.date.end
+          ).toLocaleDateString("fr-CA", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+    this.initLivraisons({start, end});
   },
 };
 </script>
