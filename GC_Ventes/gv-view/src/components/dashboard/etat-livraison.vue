@@ -5,7 +5,8 @@
         <div class="dx-field-label" style="font-size: 16px">Date début</div>
         <div class="dx-field-value">
           <DxDateBox
-            :value="date.start"
+            v-model="date.start"
+            :max="new Date()"
             type="date"
             @value-changed="onDateChange"
           />
@@ -14,8 +15,8 @@
         <div class="dx-field-label" style="font-size: 16px">Date fin</div>
         <div class="dx-field-value">
           <DxDateBox
-            :value="date.end"
-
+            v-model="date.end"
+            :max="new Date()"
             type="date"
             @value-changed="onDateChange"
           />
@@ -25,7 +26,8 @@
 
     <DxResponsiveBox :screen-by-width="screen" single-column-screen="sm">
       <DxRow :ratio="1" />
-      <DxRow :ratio="2" screen="sm" />
+      <DxRow :ratio="1" />
+      <DxRow :ratio="3" screen="sm" />
 
       <DxCol :ratio="1" />
       <DxCol :ratio="1" />
@@ -40,36 +42,31 @@
           <DxChart
             class="dx-card responsive-paddings"
             id="chart"
-            :data-source="this.getVentes"
-            palette="Carmine"
+            :data-source="this.getTopClients"
+            palette="Green Mist"
             :sticky-hovering="true"
           >
-            <DxCommonSeriesSettings
-              type="spline"
-              argument-field="month"
-              hover-mode="includePoints"
-            />
             <DxSeries
-              v-for="type in typeVente"
-              :key="type.value"
-              :value-field="type.value"
-              :name="type.name"
+              argument-field="client"
+              value-field="count"
+              name="Livraisons"
+              type="bar"
             />
-            <DxMargin :bottom="20" />
-            <DxArgumentAxis
-              :value-margins-enabled="false"
-              discrete-axis-division-mode="crossLabels"
-            >
-              <DxGrid :visible="true" />
+            <DxArgumentAxis>
+              <DxLabel
+                overlapping-behavior="stagger"
+                word-wrap="none"
+              />
             </DxArgumentAxis>
+            <DxMargin :bottom="20" />
             <DxLegend
               vertical-alignment="bottom"
               horizontal-alignment="center"
               item-text-position="right"
             />
             <DxExport :enabled="true" />
-            <DxTitle text="Vente mensuelle (Dhs)">
-              <DxSubtitle text="(Local, Export ventes par mois)" />
+            <DxTitle :text="'Top Clients ( '+ formatDate(date.start) + ' / ' + formatDate(date.end) + ' )'">
+              <DxSubtitle text="livraisons par client" />
             </DxTitle>
             <DxTooltip :enabled="true" />
           </DxChart>
@@ -84,8 +81,8 @@
             class="dx-card responsive-paddings"
             id="pie"
             :data-source="this.getLivraisons"
-            palette="Carmine"
-            title="Revenu total par année (Dhs)"
+            palette="Harmony Light"
+            :title="'Facturation de bon de livraison ( '+ formatDate(date.start) + ' / ' + formatDate(date.end) + ' )'"
           >
             <DxSeries argument-field="facture" value-field="count">
               <DxLabel
@@ -108,6 +105,44 @@
           </DxPieChart>
         </div>
       </DxItem>
+
+      <DxItem>
+        <DxLocation :row="1" :col="0" :colspan="5" screen="lg" />
+        <DxLocation :row="2" :col="0" :colspan="5" screen="sm" />
+                <div>
+          <DxChart
+            class="dx-card responsive-paddings"
+            id="chart"
+            :data-source="this.getTopDestinations"
+            palette="Carmine"
+            :sticky-hovering="true"
+          >
+            <DxSeries
+              argument-field="destination"
+              value-field="count"
+              name="Livraisons"
+              type="bar"
+            />
+            <DxArgumentAxis>
+              <DxLabel
+                overlapping-behavior="stagger"
+                word-wrap="none"
+              />
+            </DxArgumentAxis>
+            <DxMargin :bottom="20" />
+            <DxLegend
+              vertical-alignment="bottom"
+              horizontal-alignment="center"
+              item-text-position="right"
+            />
+            <DxExport :enabled="true" />
+            <DxTitle :text="'Top Destinations ( '+ formatDate(date.start) + ' / ' + formatDate(date.end) + ' )'">
+              <DxSubtitle text="livraisons par destination" />
+            </DxTitle>
+            <DxTooltip :enabled="true" />
+          </DxChart>
+        </div>
+      </DxItem>
     </DxResponsiveBox>
 
   </div>
@@ -126,9 +161,9 @@ import {
   DxChart,
   DxSeries,
   DxArgumentAxis,
-  DxCommonSeriesSettings,
+  // DxCommonSeriesSettings,
   DxExport,
-  DxGrid,
+  // DxGrid,
   DxMargin,
   DxLegend,
   DxTitle,
@@ -152,9 +187,9 @@ export default {
     DxChart,
     DxSeries,
     DxArgumentAxis,
-    DxCommonSeriesSettings,
+    // DxCommonSeriesSettings,
     DxExport,
-    DxGrid,
+    // DxGrid,
     DxMargin,
     DxLegend,
     DxTitle,
@@ -175,63 +210,51 @@ export default {
         "start": new Date(),
         "end": new Date()
       },
-      typeVente: [
-        { value: "facture", name: "Facturé" },
-        { value: "count", name: "Non Facturé" },
-      ],
     };
   },
   computed: {
     ...mapGetters({
-      getVentes: "dashboard/getVentes",
       getLivraisons: "dashboard/getLivraisons",
+      getTopDestinations: "dashboard/getTopDestinations",
+      getTopClients: "dashboard/getTopClients",
     }),
   },
   methods: {
     ...mapActions({
-      initVentes: "dashboard/initVentes",
       initLivraisons: "dashboard/initLivraisons",
+      initTopDestinations: "dashboard/initTopDestinations",
+      initTopClients: "dashboard/initTopClients",
     }),
+    formatDate: (date) => {
+      return new Date(
+          date
+        ).toLocaleDateString("fr-CA", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+    },
     onDateChange: function () {
-      let start = new Date(
-            this.date.start
-          ).toLocaleDateString("fr-CA", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
-      let end = new Date(
-              this.date.end
-            ).toLocaleDateString("fr-CA", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            });
+      let start = this.formatDate(this.date.start);
+      let end = this.formatDate(this.date.end);
 
-      console.log({start, end});
       this.initLivraisons({start, end});
+      this.initTopDestinations({start, end});
+      this.initTopClients({start, end});
     },
     formatLabel(pointInfo) {
       return `${pointInfo.valueText} (${pointInfo.percentText})`;
     },
   },
   beforeMount() {
-    this.initVentes(2021);
-    let start = new Date(
-            this.date.start
-          ).toLocaleDateString("fr-CA", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
-    let end = new Date(
-            this.date.end
-          ).toLocaleDateString("fr-CA", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
+    this.date.start.setMonth(this.date.start.getMonth() - 1);
+    console.log(this.date.start);
+    let start = this.formatDate(this.date.start);
+    let end = this.formatDate(this.date.end);
+
     this.initLivraisons({start, end});
+    this.initTopDestinations({start, end});
+    this.initTopClients({start, end});
   },
 };
 </script>

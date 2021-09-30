@@ -102,6 +102,8 @@ namespace GC_Ventes.Controllers
                 .ThenInclude(j => j.CodeArticleNavigation)
                 .Include(k => k._0110LigneBonLivraisons)
                 .ThenInclude(l => l.CodeMagasinNavigation)
+                .Include(a => a.CodeClientNavigation)
+                .Include(b => b.IdDestinationNavigation)
                 .FirstOrDefault(x => x.Id == id);
 
 

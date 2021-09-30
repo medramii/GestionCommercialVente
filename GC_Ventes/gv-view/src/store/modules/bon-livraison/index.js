@@ -83,7 +83,7 @@ const bonLivraison = {
                 "devise": getters.getBlInUse.devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
-                montantDH,
+                "montantDH": montantDH.toFixed(2),
                 "_0110LigneBonLivraisons": lignesBl
             };
 
@@ -132,12 +132,27 @@ const bonLivraison = {
                 "devise": getters.getBlInUse.devise || '',
                 "observation": getters.getBlInUse.observation || '',
                 "tauxDeChange": getters.getBlInUse.tauxDeChange || '',
-                montantDH,
+                "montantDH": montantDH.toFixed(2),
                 "_0110LigneBonLivraisons": lignesBl
             };
             return new Promise((resolve, reject) => {
                 Api.put(MAIN_END_POINT + id, bl)
                 .then((response) => { 
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
+
+        // for print
+        getBLById: ({commit}, id) => {
+            console.log(!!commit);
+            console.log(id);
+            return new Promise((resolve, reject) => {
+                Api.get(MAIN_END_POINT + id)
+                .then((response) => {
                     resolve(response);
                 })
                 .catch((error) => {

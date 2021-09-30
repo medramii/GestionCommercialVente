@@ -60,7 +60,7 @@ namespace GC_Ventes.Controllers
                 return BadRequest(e);
             }
         }
-        // GET: api/Dashboard/Livraisons/1-6-2021/30-6-2021
+        // GET: api/Dashboard/Livraisons/6-1-2021/6-30-2021
         [HttpGet("Livraisons/{start}/{end}")]
         public async Task<ActionResult> GetLivraisons(DateTime start, DateTime end)
         {
@@ -83,6 +83,56 @@ namespace GC_Ventes.Controllers
                 return BadRequest(e);
             }
         }
+        // GET: api/Dashboard/TopDestinations/6-1-2021/6-30-2021
+        [HttpGet("TopDestinations/{start}/{end}")]
+        public async Task<ActionResult> GetTopDestinations(DateTime start, DateTime end)
+        {
+            try
+            {
+                var Livraisons = from x in _context._0110BonLivraisons
+                                 where x.DateBl >= start && x.DateBl <= end
+                                 group x by new { x.IdDestinationNavigation.IdVille, x.IdDestinationNavigation.Ville }
+                                 into y
+                                 orderby y.Count() descending
+                                 select new
+                                 {
+                                     destination = y.Key.Ville,
+                                     count = y.Count(),
+                                 };
+
+                return Ok(Livraisons);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+        // GET: api/Dashboard/TopClients/6-1-2021/6-30-2021
+        [HttpGet("TopClients/{start}/{end}")]
+        public async Task<ActionResult> GetTopClients(DateTime start, DateTime end)
+        {
+            try
+            {
+                var Livraisons = from x in _context._0110BonLivraisons
+                                 where x.DateBl >= start && x.DateBl <= end
+                                 group x by new { x.CodeClientNavigation.CodeClient, x.CodeClientNavigation.RaisonSociale }
+                                 into y
+                                 orderby y.Count() descending
+                                 select new
+                                 {
+                                     client = y.Key.RaisonSociale,
+                                     count = y.Count(),
+                                 };
+
+                return Ok(Livraisons);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+
 
     }
 }

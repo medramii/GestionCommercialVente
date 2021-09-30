@@ -14,25 +14,11 @@
       @selection-changed="selectedChanged"
     >
       <DxFilterRow :visible="true" />
-      <DxPaging 
-        :page-size="10"
-      />
-      <DxPager 
-        :show-page-size-selector="true" 
-        :show-info="true" 
-      />
-      <DxEditing
-        refresh-mode="repaint"
-      />
-      <DxColumn
-        :width="100"
-        data-field="numFac"
-        caption="Numero"
-      />
-      <DxColumn
-        data-field="client.raisonSociale"
-        caption="Client"
-      />
+      <DxPaging :page-size="10" />
+      <DxPager :show-page-size-selector="true" :show-info="true" />
+      <DxEditing refresh-mode="repaint" />
+      <DxColumn :width="100" data-field="numFac" caption="Numero" />
+      <DxColumn data-field="client.raisonSociale" caption="Client" />
       <DxColumn
         data-field="dateFac"
         data-type="date"
@@ -43,54 +29,32 @@
         data-type="date"
         caption="Date d'echeance"
       />
-      <DxColumn
-        data-field="modeReg.designation"
-        caption="Mode Reglement"
-      />
-      <DxColumn
-        data-field="montantDh"
-        caption="Prix total (Dhs)"
-      />
-      <DxColumn
-        :width="500"
-        data-field="devise.designation"
-        caption="Devise"
-      />
-      <DxColumn
-        data-field="tauxDeChange"
-        caption="Taux de change"
-      />
-      <DxColumn
-        data-field="montantDevise"
-        caption="Prix Devise"
-      />
-      <DxColumn
-        data-field="observation"
-        caption="Observation"
-      />
-      <DxMasterDetail
-        :enabled="true"
-        template="masterDetailTemplate"
-      />
+      <DxColumn data-field="modeReg.designation" caption="Mode Reglement" />
+      <DxColumn data-field="montantDh" caption="Montant total (Dhs)" />
+      <DxColumn :width="500" data-field="devise.designation" caption="Devise" />
+      <DxColumn data-field="tauxDeChange" caption="Taux de change" />
+      <DxColumn data-field="montantDevise" caption="Prix Devise" />
+      <DxColumn data-field="observation" caption="Observation" />
+      <DxMasterDetail :enabled="true" template="masterDetailTemplate" />
       <template #masterDetailTemplate="{ data: facture }">
-        <DetailTemplate
-          :FactureData="facture"
-        />
+        <DetailTemplate :FactureData="facture" />
       </template>
     </DxDataGrid>
     <DxSpeedDialAction
       :index="1"
       :on-click="exportGrid"
       icon="exportpdf"
-      label="Exporter PDF"
+      label="Imprimer la list"
     />
     <DxSpeedDialAction
+      v-if="getSignedUser.idGroupe != 4"
       :index="2"
       :on-click="addFacture"
       icon="add"
       label="Ajouter"
     />
     <DxSpeedDialAction
+      v-if="getSignedUser.idGroupe != 4"
       :visible="selectedRowIndex !== -1"
       :on-click="deleteFacture"
       :index="3"
@@ -98,6 +62,7 @@
       label="Supprimer"
     />
     <DxSpeedDialAction
+      v-if="getSignedUser.idGroupe != 4"
       :visible="selectedRowIndex !== -1"
       :on-click="editFacture"
       :index="4"
@@ -109,7 +74,7 @@
       :on-click="printFacture"
       :index="5"
       icon="print"
-      label="Imprimer"
+      label="Imprimer la facture"
     />
   </div>
 </template>
@@ -122,90 +87,118 @@ import {
   DxEditing,
   DxColumn,
   DxMasterDetail,
-} from 'devextreme-vue/data-grid';
-import CustomStore from 'devextreme/data/custom_store';
-import DxSpeedDialAction from 'devextreme-vue/speed-dial-action';
-import {mapGetters, mapActions} from "vuex"
+} from "devextreme-vue/data-grid";
+import CustomStore from "devextreme/data/custom_store";
+import DxSpeedDialAction from "devextreme-vue/speed-dial-action";
+import notify from "devextreme/ui/notify";
+import { mapGetters, mapActions } from "vuex";
 
-import DetailTemplate from '../components/facture/master-template.vue';
+import DetailTemplate from "../components/facture/master-template.vue";
 
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-import { exportDataGrid as exportDataGridToPdf } from 'devextreme/pdf_exporter';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import { exportDataGrid as exportDataGridToPdf } from "devextreme/pdf_exporter";
 
 export default {
   data() {
     return {
-      gridRefName: 'grid',
+      gridRefName: "grid",
       dataSource: new CustomStore({
-        key: 'id',
+        key: "id",
         load: async () => {
           await this.initFactures();
           return this.getFactures();
         },
         remove: () => {
           this.onDeleteFacture();
-        }
+        },
       }),
       selectedFacId: null,
-      selectedRowIndex: -1
+      selectedRowIndex: -1,
     };
   },
   computed: {
-    grid: function() {
+    grid: function () {
       return this.$refs[this.gridRefName].instance;
-    }
+    },
+    ...mapGetters({
+      getSignedUser: "login/getSignedUser",
+    }),
   },
   methods: {
-    ...mapGetters(
-      {
-        getFactures: "facture/getFactures",
-      },
-    ),
-    ...mapActions(
-      {
-        initFactures: "facture/initFactures",
-        getFactureById: "facture/getFactureById",
-      }
-    ),
+    ...mapGetters({
+      getFactures: "facture/getFactures",
+    }),
+    ...mapActions({
+      initFactures: "facture/initFactures",
+      getFactureById: "facture/getFactureById",
+    }),
     selectedChanged(e) {
       this.selectedFacId = e.selectedRowKeys[0];
-      this.selectedRowIndex = e.component.getRowIndexByKey(e.selectedRowKeys[0]);
+      this.selectedRowIndex = e.component.getRowIndexByKey(
+        e.selectedRowKeys[0]
+      );
     },
-    addFacture: function() {
-      this.$router.push({name: 'gestion-facture', params: {action: "Ajouter", id: "nouveau"}})
+    addFacture: function () {
+      this.$router.push({
+        name: "gestion-facture",
+        params: { action: "Ajouter", id: "nouveau" },
+      });
     },
-    editFacture: function() {
-      this.$router.push({name: 'gestion-facture', params: {action: "Modifier", id: this.selectedFacId}})
+    editFacture: function () {
+      this.$router.push({
+        name: "gestion-facture",
+        params: { action: "Modifier", id: this.selectedFacId },
+      });
     },
-    deleteFacture: async function() {
+    deleteFacture: async function () {
       this.grid.deleteRow(this.selectedRowIndex);
     },
-    onDeleteFacture: function() {
-      this.$store.dispatch('facture/deleteFacture', this.selectedFacId);
+    onDeleteFacture: function () {
+      this.$store.dispatch("facture/deleteFacture", this.selectedFacId);
     },
-    exportGrid() { 
+    exportGrid() {
       const doc = new jsPDF();
       exportDataGridToPdf({
         jsPDFDocument: doc,
-        component: this.grid
+        component: this.grid,
       }).then(() => {
-        doc.save('Factures.pdf');
+        doc.save("Factures.pdf");
       });
     },
-    printFacture: async function() {
+    printFacture: async function () {
       let facture = await this.getFactureById(this.selectedFacId);
       facture = facture.data[0];
-      // if (!!facture) {
-      //   this.notify("Aucun donne a exporter", "error");
-      //   return;
-      // }
-      console.log(facture);
-    /* ------------------------------------------------------- */
+
+      let articles = [];
+      facture.lignesFacture.forEach((el) => {
+        el.articles.forEach((art) => {
+          articles.push(art);
+        });
+      });
+
+      let fltr = [];
+
+      articles.forEach((el) => {
+        let art = { article: el.article, prix: el.prix };
+        if (!fltr.includes(art)) {
+          fltr.push(art);
+        }
+      });
+
+      console.log(articles);
+      console.log(fltr);
+
+      /* -------------------------------------------------------- */
+
+      if (!facture) {
+        notify("Aucun données a exporter", "error", 2000);
+        return;
+      }
+      /* ------------------------------------------------------- */
       var pdf = new jsPDF("p", "pt");
 
-      var pageContent = function (data) {
-
+      var pageContent = function () {
         // Numero de facture
         // pdf.setFont("Calibri");
         pdf.setFillColor(255, 121, 78);
@@ -219,7 +212,7 @@ export default {
         // pdf.setFont("Calibri");
         pdf.setTextColor(255, 121, 78);
         pdf.setFontSize(22);
-        pdf.text("Gestion Commercial", pdf.internal.pageSize.width - 50, 55, {
+        pdf.text("Facture Client", pdf.internal.pageSize.width - 50, 55, {
           align: "right",
         });
 
@@ -228,34 +221,38 @@ export default {
         pdf.setTextColor(0, 0, 0);
         pdf.setFontSize(12);
         pdf.text(40, 150, "Numero de facture : " + facture.numFac);
-        pdf.text(40, 170, "Facturé le : " + 
-          new Date(
-            facture.dateFacture
-          ).toLocaleDateString("fr-CA", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-        );
-        pdf.text(40, 190, "Date d'écheance : " + 
-          new Date(
-            facture.dateEcheance
-          ).toLocaleDateString("fr-CA", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          })
-        );
-      
         pdf.text(
-          pdf.internal.pageSize.width - 40, 150,
-          "Client : " + facture.nomClient, 
-          {align: "right"}
+          40,
+          170,
+          "Facturé le : " +
+            new Date(facture.dateFacture).toLocaleDateString("fr-CA", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })
         );
         pdf.text(
-          "Envoyé à : " + facture.addressClient, 
-          pdf.internal.pageSize.width - 40, 170, 
-          {align: "right"}
+          40,
+          190,
+          "Date d'écheance : " +
+            new Date(facture.dateEcheance).toLocaleDateString("fr-CA", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })
+        );
+
+        pdf.text(
+          pdf.internal.pageSize.width - 40,
+          150,
+          "Client : " + facture.nomClient,
+          { align: "right" }
+        );
+        pdf.text(
+          "Envoyé à : " + facture.addressClient,
+          pdf.internal.pageSize.width - 40,
+          170,
+          { align: "right" }
         );
 
         // Footer
@@ -277,57 +274,81 @@ export default {
           "Gestion Commercial",
           pdf.internal.pageSize.width - 40,
           pdf.internal.pageSize.height - 12,
-          {align: "right"}
+          { align: "right" }
+        );
+
+        // details box
+        pdf.setFillColor(250, 250, 250);
+        pdf.rect(100, 250, pdf.internal.pageSize.width - 200, 155, "F");
+
+        // pdf.setFillColor(255, 255, 255);
+        // pdf.rect(100, 375, (pdf.internal.pageSize.width - 200)/2, 30, "F");
+        pdf.setFillColor(255, 121, 78);
+        pdf.rect(
+          (pdf.internal.pageSize.width - 200) / 2 + 100,
+          375,
+          (pdf.internal.pageSize.width - 200) / 2,
+          30,
+          "F"
+        );
+
+        pdf.setFontSize(14);
+        pdf.setTextColor(0);
+        pdf.text(115, 270, "Mode de reglement");
+        pdf.text(115, 300, "Devise");
+        pdf.text(115, 330, "Taux de change");
+        pdf.text(115, 360, "Montant devise");
+        pdf.text(115, 390, "Montant Dh");
+
+        pdf.text(
+          pdf.internal.pageSize.width - 115,
+          270,
+          facture.modeReglementDetails.designation,
+          { align: "right" }
+        );
+        pdf.text(
+          pdf.internal.pageSize.width - 115,
+          300,
+          facture.deviseDetails.designation,
+          { align: "right" }
+        );
+        pdf.text(
+          pdf.internal.pageSize.width - 115,
+          330,
+          facture.tauxDeChange.toString(),
+          { align: "right" }
+        );
+        pdf.text(
+          pdf.internal.pageSize.width - 115,
+          360,
+          facture.montantDevise.toString(),
+          { align: "right" }
+        );
+        pdf.setFontSize(16);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text(
+          pdf.internal.pageSize.width - 115,
+          395,
+          facture.montantDh.toString() + " Dhs",
+          { align: "right" }
         );
       };
 
-
-      pdf.setFillColor(250, 250, 250);
-      pdf.rect(100, 250, pdf.internal.pageSize.width - 200, 155, "F");
-
-      // pdf.setFillColor(255, 255, 255);
-      // pdf.rect(100, 375, (pdf.internal.pageSize.width - 200)/2, 30, "F");
-      pdf.setFillColor(255, 121, 78);
-      pdf.rect(
-        (pdf.internal.pageSize.width - 200)/2 + 100, 375,
-        (pdf.internal.pageSize.width - 200)/2, 30, "F"
-      );
-
-
-
-
-      pdf.setFontSize(14);
-      pdf.setTextColor(0);
-      pdf.text(115, 270, "Mode de reglement");
-      pdf.text(115, 300, "Devise");
-      pdf.text(115, 330, "Taux de change");
-      pdf.text(115, 360, "Montant devise");
-      pdf.text(115, 390, "Montant Dh");
-
-      pdf.text(pdf.internal.pageSize.width - 115, 270, facture.modeReglementDetails.designation, {align: "right"});
-      pdf.text(pdf.internal.pageSize.width - 115, 300, facture.deviseDetails.designation, {align: "right"});
-      pdf.text(pdf.internal.pageSize.width - 115, 330, facture.tauxDeChange.toString(), {align: "right"});
-      pdf.text(pdf.internal.pageSize.width - 115, 360, facture.montantDevise.toString(), {align: "right"});
-      pdf.setFontSize(16);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text(pdf.internal.pageSize.width - 115, 395, facture.montantDh.toString() + " Dhs", {align: "right"});
-
       var columns = [
-        { title: "Livraison", dataKey: "livraison" },
-        { title: "Date", dataKey: "date" },
-        { title: "Destination", dataKey: "destination" },
-        { title: "Type de vente", dataKey: "typeDeVente" },
-        { title: "Montant (Dhs)", dataKey: "montantDh" },
+        { title: "Article", dataKey: "article" },
+        { title: "Quantité", dataKey: "qte" },
+        { title: "Prix unitaire (Dhs)", dataKey: "prix" },
+        { title: "Montant (Dhs)", dataKey: "montant" },
       ];
 
-      pdf.autoTable(columns, facture.lignesFacture, {
+      pdf.autoTable(columns, articles, {
         // theme: "grid",
         didDrawPage: pageContent,
         margin: {
           top: 450,
           left: 40,
           right: 40,
-          bottom: 20,
+          bottom: 40,
         },
         styles: {
           cellPadding: 5,
@@ -339,7 +360,7 @@ export default {
         },
         headStyles: {
           fontSize: 13,
-          fillColor: [255, 121, 78]
+          fillColor: [255, 121, 78],
         },
         bodyStyles: {
           fontSize: 11,
@@ -358,12 +379,14 @@ export default {
     DxColumn,
     DxMasterDetail,
     DxSpeedDialAction,
-    DetailTemplate
+    DetailTemplate,
   },
 };
 </script>
 <style>
 #grid-container {
-    height: 440px;
+  height: 440px;
+  /* height: auto;
+  max-height: 440px; */
 }
 </style>

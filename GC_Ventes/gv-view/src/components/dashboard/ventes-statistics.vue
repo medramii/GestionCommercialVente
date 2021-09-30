@@ -60,7 +60,7 @@
               item-text-position="right"
             />
             <DxExport :enabled="true" />
-            <DxTitle text="Vente mensuelle (Dhs)">
+            <DxTitle :text="'Vente mensuelle ' + selectedYear + ' (Dhs) '">
               <DxSubtitle text="(Local, Export ventes par mois)" />
             </DxTitle>
             <DxTooltip :enabled="true" />
@@ -77,7 +77,7 @@
             id="pie"
             :data-source="this.getTotal"
             palette="Carmine"
-            title="Revenu total par année (Dhs)"
+            :title="'Revenu total par année (Dhs) ' + selectedYear"
           >
             <DxSeries argument-field="type" value-field="montant">
               <DxLabel
@@ -163,7 +163,8 @@ export default {
       screen(width) {
         return width < 1000 ? "sm" : "lg";
       },
-      years: [2019, 2020, 2021],
+      years: [2015, 2016, 2017, 2018, 2019, 2020, 2021],
+      selectedYear: 2021,
       typeVente: [
         { value: "local", name: "Local" },
         { value: "export", name: "Export" },
@@ -181,6 +182,7 @@ export default {
       initVentes: "dashboard/initVentes",
     }),
     onYearChange: function (e) {
+      this.selectedYear = e.value;
       this.initVentes(e.value);
     },
     formatLabel(pointInfo) {

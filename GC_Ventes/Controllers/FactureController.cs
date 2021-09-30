@@ -160,7 +160,13 @@ namespace GC_Ventes.Controllers
                             Date = i.DateBl,
                             Destination = i.IdDestinationNavigation.Ville,
                             TypeDeVente = i.TypeVente,
-                            i.MontantDh
+                            i.MontantDh,
+                            Articles = i._0110LigneBonLivraisons.Select(j => new {
+                                article = j.CodeArticleNavigation.Designation,
+                                j.Qte,
+                                j.Prix,
+                                j.Montant
+                            }),
                         })
                     });
 

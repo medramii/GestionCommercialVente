@@ -8,17 +8,23 @@ const dashboard = {
             Ventes: [],
             Total: [],
             Livraisons: [],
+            TopDestinations: [],
+            TopClients: [],
         }
     },
     getters: {
         getVentes: (state) => state.Ventes,
         getTotal: (state) => state.Total,
         getLivraisons: (state) => state.Livraisons,
+        getTopDestinations: (state) => state.TopDestinations,
+        getTopClients: (state) => state.TopClients,
     },
     mutations: {
         setVentes: (state, payLoad) => state.Ventes = payLoad,
         setTotal: (state, payLoad) => state.Total = payLoad,
         setLivraisons: (state, payLoad) => state.Livraisons = payLoad,
+        setTopDestinations: (state, payLoad) => state.TopDestinations = payLoad,
+        setTopClients: (state, payLoad) => state.TopClients = payLoad,
     },
     actions: {
         initVentes: ({commit}, year) => {
@@ -73,6 +79,32 @@ const dashboard = {
                         }
                     });
                     commit("setLivraisons", [fData, nfData]);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
+        initTopDestinations: ({commit}, date) => {
+            return new Promise((resolve, reject) => {
+                Api.get(END_POINT + "TopDestinations/" + date.start + "/" + date.end)
+                .then((response) => {
+                    const top = response.data.slice(0,20);
+                    commit("setTopDestinations", top);
+                    resolve(response.data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            });
+        },
+        initTopClients: ({commit}, date) => {
+            return new Promise((resolve, reject) => {
+                Api.get(END_POINT + "TopClients/" + date.start + "/" + date.end)
+                .then((response) => {
+                    const top = response.data.slice(0,10);
+                    commit("setTopClients", top);
                     resolve(response.data);
                 })
                 .catch((error) => {

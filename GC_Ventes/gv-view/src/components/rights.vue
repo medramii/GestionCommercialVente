@@ -2,7 +2,7 @@
   <div>
     <div class="dx-fieldset">
       <div class="dx-field">
-        <div class="dx-field-label" style="font-size: 16px;">Group</div>
+        <div class="dx-field-label" style="font-size: 16px;">Groupe</div>
         <div class="dx-field-value">
           <DxSelectBox
             :search-enabled="true"
